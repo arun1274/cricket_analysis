@@ -33,5 +33,6 @@
 /home/gowtham/Desktop/Cricket_Analysis/src/main/java/com/cpi/cpi_backend/security/JwtAuthenticationFilter.java
 /home/gowtham/Desktop/Cricket_Analysis/src/main/java/com/cpi/cpi_backend/security/JwtService.java
 /home/gowtham/Desktop/Cricket_Analysis/src/main/java/com/cpi/cpi_backend/security/SecurityConfiguration.java
+/home/gowtham/Desktop/Cricket_Analysis/src/main/java/com/cpi/cpi_backend/security/WebMvcConfig.java
 /home/gowtham/Desktop/Cricket_Analysis/src/main/java/com/cpi/cpi_backend/service/AuthService.java
 /home/gowtham/Desktop/Cricket_Analysis/src/main/java/com/cpi/cpi_backend/service/DataInitializer.java

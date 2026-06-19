@@ -13,6 +13,7 @@ com/cpi/cpi_backend/entity/PracticeAssessment.class
 com/cpi/cpi_backend/entity/MatchAssessment.class
 com/cpi/cpi_backend/dto/DashboardStatsResponse$TrendDto$TrendDtoBuilder.class
 com/cpi/cpi_backend/dto/DashboardStatsResponse$ActivityDto.class
+com/cpi/cpi_backend/security/WebMvcConfig.class
 com/cpi/cpi_backend/entity/Organization$OrganizationBuilder.class
 com/cpi/cpi_backend/entity/Player$PlayerBuilder.class
 com/cpi/cpi_backend/dto/PracticeAssessmentRequest$PracticeAssessmentRequestBuilder.class

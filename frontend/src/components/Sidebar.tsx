@@ -68,9 +68,15 @@ export function Sidebar() {
         <button
           onClick={() => {
             localStorage.removeItem("token");
-            window.location.href = "/login";
+            sessionStorage.clear();
+            document.cookie.split(";").forEach((c) => {
+              document.cookie = c
+                .replace(/^ +/, "")
+                .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+            });
+            window.location.replace("/login");
           }}
-          className="flex w-full items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-zinc-400 hover:bg-white/5 hover:text-white transition-colors"
+          className="flex w-full items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-zinc-400 hover:bg-white/5 hover:text-white transition-colors cursor-pointer"
         >
           <LogOut className="w-5 h-5" />
           Log Out

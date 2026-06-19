@@ -39,7 +39,13 @@ export default function DashboardLayout({
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    window.location.href = "/login";
+    sessionStorage.clear();
+    document.cookie.split(";").forEach((c) => {
+      document.cookie = c
+        .replace(/^ +/, "")
+        .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+    });
+    window.location.replace("/login");
   };
 
   if (loading) {
