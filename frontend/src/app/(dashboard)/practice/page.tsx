@@ -127,7 +127,7 @@ export default function PracticePage() {
   const handleStartAddPractice = async () => {
     setLoading(true);
     try {
-      const response = await api.get("/api/teams");
+      const response = await api.get("/teams");
       setTeams(response.data);
       setView("select_team");
     } catch (err) {
