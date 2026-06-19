@@ -1,6 +1,5 @@
 /home/gowtham/Desktop/Cricket_Analysis/src/main/java/com/cpi/cpi_backend/CpiBackendApplication.java
 /home/gowtham/Desktop/Cricket_Analysis/src/main/java/com/cpi/cpi_backend/controller/AuthController.java
-/home/gowtham/Desktop/Cricket_Analysis/src/main/java/com/cpi/cpi_backend/controller/HealthController.java
 /home/gowtham/Desktop/Cricket_Analysis/src/main/java/com/cpi/cpi_backend/controller/PlayerController.java
 /home/gowtham/Desktop/Cricket_Analysis/src/main/java/com/cpi/cpi_backend/controller/TeamController.java
 /home/gowtham/Desktop/Cricket_Analysis/src/main/java/com/cpi/cpi_backend/dto/AuthenticationRequest.java

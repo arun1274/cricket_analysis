@@ -1,17 +1,18 @@
 #!/bin/bash
 set -e
 
-echo "Building frontend..."
+echo "Building Frontend..."
 cd frontend
 npm install
 npm run build
 cd ..
 
-echo "Copying frontend build to backend static resources..."
-mkdir -p src/main/resources/static
-# Clear existing static files to prevent stale assets
+echo "Copying Frontend to Backend..."
 rm -rf src/main/resources/static/*
+mkdir -p src/main/resources/static
 cp -r frontend/out/* src/main/resources/static/
 
-echo "Building backend..."
-./mvnw clean package -DskipTests
+echo "Building Backend..."
+mvn clean package -DskipTests
+
+echo "Build complete. Run with: java -jar target/cpi-backend-0.0.1-SNAPSHOT.jar"
