@@ -33,6 +33,11 @@ public class Team {
 
     private Double teamCpiScore;
 
+    // Maps to the existing organization_id NOT NULL column in the database.
+    // Automatically inherited from the coach who creates the team.
+    @Column(name = "organization_id", nullable = false)
+    private Long organizationId;
+
     @CreationTimestamp
     private LocalDateTime createdAt;
 }

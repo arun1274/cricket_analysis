@@ -39,11 +39,15 @@ public class TeamController {
         Coach managedCoach = coachRepository.findById(currentCoach.getId())
                 .orElseThrow(() -> new RuntimeException("Coach not found"));
 
+        // Inherit organizationId from the coach; default to 1 for legacy accounts
+        Long orgId = managedCoach.getOrganizationId() != null ? managedCoach.getOrganizationId() : 1L;
+
         Team team = Team.builder()
                 .name(request.getName())
                 .level(request.getLevel())
                 .coach(managedCoach)
                 .teamCpiScore(0.0)
+                .organizationId(orgId)
                 .build();
         return ResponseEntity.ok(teamRepository.save(team));
     }
