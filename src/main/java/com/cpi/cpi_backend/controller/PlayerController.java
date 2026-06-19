@@ -51,9 +51,7 @@ public class PlayerController {
                 throw new RuntimeException("Unauthorized");
             }
         } else {
-            boolean hasAccess = player.getTeams().stream()
-                    .anyMatch(t -> t.getCoach().getId().equals(managedCoach.getId()));
-            if (!hasAccess) {
+            if (player.getCreatorCoach() == null || !player.getCreatorCoach().getId().equals(managedCoach.getId())) {
                 throw new RuntimeException("Unauthorized");
             }
         }
@@ -68,7 +66,11 @@ public class PlayerController {
             return ResponseEntity.ok(List.of());
         }
 
-        return ResponseEntity.ok(playerRepository.findByOrganizationId(managedCoach.getOrganization().getId()));
+        if (managedCoach.getRole() == Role.ADMIN) {
+            return ResponseEntity.ok(playerRepository.findByOrganizationId(managedCoach.getOrganization().getId()));
+        } else {
+            return ResponseEntity.ok(playerRepository.findByCreatorCoachId(managedCoach.getId()));
+        }
     }
 
     @GetMapping("/team/{teamId}")
@@ -96,12 +98,16 @@ public class PlayerController {
                 
         checkAccess(team, currentCoach);
 
+        Coach creatorCoach = coachRepository.findById(currentCoach.getId())
+                .orElseThrow(() -> new RuntimeException("Coach not found"));
+
         Player player = Player.builder()
                 .name(request.getName())
                 .role(request.getRole())
                 .battingStyle(request.getBattingStyle())
                 .bowlingStyle(request.getBowlingStyle())
                 .organization(team.getOrganization())
+                .creatorCoach(creatorCoach)
                 .ppiScore(0.0)
                 .mpiScore(0.0)
                 .build();

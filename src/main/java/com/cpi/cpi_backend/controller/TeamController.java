@@ -145,6 +145,14 @@ public class TeamController {
 
         checkAccess(team, currentCoach);
 
+        Coach managedCoach = coachRepository.findById(currentCoach.getId())
+                .orElseThrow(() -> new RuntimeException("Coach not found"));
+        if (managedCoach.getRole() != com.cpi.cpi_backend.entity.Role.ADMIN) {
+            if (player.getCreatorCoach() == null || !player.getCreatorCoach().getId().equals(managedCoach.getId())) {
+                throw new RuntimeException("Unauthorized: You do not own this player");
+            }
+        }
+
         if (team.getOrganization() == null || player.getOrganization() == null ||
             !team.getOrganization().getId().equals(player.getOrganization().getId())) {
             throw new RuntimeException("Unauthorized: Team and player must be in the same organization");
@@ -178,6 +186,14 @@ public class TeamController {
                 .orElseThrow(() -> new RuntimeException("Player not found"));
 
         checkAccess(team, currentCoach);
+
+        Coach managedCoach = coachRepository.findById(currentCoach.getId())
+                .orElseThrow(() -> new RuntimeException("Coach not found"));
+        if (managedCoach.getRole() != com.cpi.cpi_backend.entity.Role.ADMIN) {
+            if (player.getCreatorCoach() == null || !player.getCreatorCoach().getId().equals(managedCoach.getId())) {
+                throw new RuntimeException("Unauthorized: You do not own this player");
+            }
+        }
 
         player.getTeams().remove(team);
         playerRepository.save(player);

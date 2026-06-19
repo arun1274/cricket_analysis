@@ -18,4 +18,7 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
 
     @Query("SELECT DISTINCT p FROM Player p LEFT JOIN FETCH p.teams t WHERE p.organization.id = :organizationId")
     List<Player> findByOrganizationId(@Param("organizationId") Long organizationId);
+
+    @Query("SELECT DISTINCT p FROM Player p LEFT JOIN FETCH p.teams t WHERE p.creatorCoach.id = :coachId")
+    List<Player> findByCreatorCoachId(@Param("coachId") Long coachId);
 }

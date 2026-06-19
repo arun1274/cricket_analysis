@@ -46,6 +46,11 @@ public class Player {
     @JoinColumn(name = "organization_id")
     private Organization organization;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "creator_coach_id")
+    @com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "organization", "password"})
+    private Coach creatorCoach;
+
     @CreationTimestamp
     private LocalDateTime createdAt;
 

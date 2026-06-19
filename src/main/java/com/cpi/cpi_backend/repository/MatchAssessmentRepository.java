@@ -17,4 +17,10 @@ public interface MatchAssessmentRepository extends JpaRepository<MatchAssessment
 
     @Query("SELECT DISTINCT ma FROM MatchAssessment ma JOIN FETCH ma.player p JOIN p.teams t WHERE t.coach.id = :coachId ORDER BY ma.createdAt DESC")
     List<MatchAssessment> findTop10ByCoachIdOrderByCreatedAtDesc(@Param("coachId") Long coachId);
+
+    @Query("SELECT ma FROM MatchAssessment ma JOIN FETCH ma.player p WHERE p.organization.id = :orgId")
+    List<MatchAssessment> findByOrganizationId(@Param("orgId") Long orgId);
+
+    @Query("SELECT ma FROM MatchAssessment ma JOIN FETCH ma.player p WHERE p.organization.id = :orgId ORDER BY ma.createdAt DESC")
+    List<MatchAssessment> findTop10ByOrganizationIdOrderByCreatedAtDesc(@Param("orgId") Long orgId);
 }

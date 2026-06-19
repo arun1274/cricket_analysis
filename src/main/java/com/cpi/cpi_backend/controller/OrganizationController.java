@@ -78,13 +78,7 @@ public class OrganizationController {
         List<CoachSummaryResponse> summaries = coaches.stream().map(coach -> {
             var teams = teamRepository.findByCoachId(coach.getId());
             int teamsCount = teams.size();
-            java.util.Set<Long> uniquePlayerIds = new java.util.HashSet<>();
-            for (var team : teams) {
-                for (var player : playerRepository.findByTeamId(team.getId())) {
-                    uniquePlayerIds.add(player.getId());
-                }
-            }
-            int playersCount = uniquePlayerIds.size();
+            int playersCount = playerRepository.findByCreatorCoachId(coach.getId()).size();
 
             // Mock last activity for premium experience
             String lastActivity = "Today";
@@ -254,7 +248,7 @@ public class OrganizationController {
                     .playersCount(pCount)
                     .build());
         }
-        int totalPlayers = uniquePlayerIds.size();
+        int totalPlayers = playerRepository.findByCreatorCoachId(targetCoach.getId()).size();
 
         double averageCpi = totalTeams > 0 ? (totalCpi / totalTeams) : 0.0;
 

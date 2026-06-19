@@ -44,7 +44,7 @@ public class PracticeController {
             authorized = player.getOrganization() != null && managedCoach.getOrganization() != null &&
                     player.getOrganization().getId().equals(managedCoach.getOrganization().getId());
         } else {
-            authorized = player.getTeams().stream().anyMatch(t -> t.getCoach().getId().equals(managedCoach.getId()));
+            authorized = player.getCreatorCoach() != null && player.getCreatorCoach().getId().equals(managedCoach.getId());
         }
         if (!authorized) {
             throw new RuntimeException("Unauthorized");
@@ -107,7 +107,7 @@ public class PracticeController {
             authorized = player.getOrganization() != null && managedCoach.getOrganization() != null &&
                     player.getOrganization().getId().equals(managedCoach.getOrganization().getId());
         } else {
-            authorized = player.getTeams().stream().anyMatch(t -> t.getCoach().getId().equals(managedCoach.getId()));
+            authorized = player.getCreatorCoach() != null && player.getCreatorCoach().getId().equals(managedCoach.getId());
         }
         if (!authorized) {
             throw new RuntimeException("Unauthorized");

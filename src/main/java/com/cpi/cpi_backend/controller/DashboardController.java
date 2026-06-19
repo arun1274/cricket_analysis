@@ -25,18 +25,40 @@ public class DashboardController {
     private final PlayerRepository playerRepository;
     private final PracticeAssessmentRepository practiceAssessmentRepository;
     private final MatchAssessmentRepository matchAssessmentRepository;
+    private final CoachRepository coachRepository;
 
     @GetMapping("/stats")
     public ResponseEntity<DashboardStatsResponse> getDashboardStats(
             @AuthenticationPrincipal Coach currentCoach
     ) {
         Long coachId = currentCoach.getId();
+        Coach managedCoach = coachRepository.findById(coachId)
+                .orElseThrow(() -> new RuntimeException("Coach not found"));
 
-        // 1. Fetch data
-        List<Team> teams = teamRepository.findByCoachId(coachId);
-        List<Player> players = playerRepository.findByTeamCoachId(coachId);
-        List<PracticeAssessment> practiceAssessments = practiceAssessmentRepository.findByCoachId(coachId);
-        List<MatchAssessment> matchAssessments = matchAssessmentRepository.findByCoachId(coachId);
+        List<Team> teams;
+        List<Player> players;
+        List<PracticeAssessment> practiceAssessments;
+        List<MatchAssessment> matchAssessments;
+
+        if (managedCoach.getRole() == Role.ADMIN) {
+            Long orgId = managedCoach.getOrganization() != null ? managedCoach.getOrganization().getId() : null;
+            if (orgId != null) {
+                teams = teamRepository.findByOrganizationId(orgId);
+                players = playerRepository.findByOrganizationId(orgId);
+                practiceAssessments = practiceAssessmentRepository.findByOrganizationId(orgId);
+                matchAssessments = matchAssessmentRepository.findByOrganizationId(orgId);
+            } else {
+                teams = List.of();
+                players = List.of();
+                practiceAssessments = List.of();
+                matchAssessments = List.of();
+            }
+        } else {
+            teams = teamRepository.findByCoachId(coachId);
+            players = playerRepository.findByCreatorCoachId(coachId);
+            practiceAssessments = practiceAssessmentRepository.findByCoachId(coachId);
+            matchAssessments = matchAssessmentRepository.findByCoachId(coachId);
+        }
 
         // 2. Compute Card Stats
         long totalTeams = teams.size();
