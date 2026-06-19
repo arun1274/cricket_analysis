@@ -21,10 +21,16 @@ public class Organization {
     @Column(nullable = false)
     private String name;
 
+    private String type; // Academy / School / Club / Professional Team
+    private String sport;
+    private String country;
+    private String city;
+
+    @Column(columnDefinition = "TEXT")
+    private String description;
+
     private String logoUrl;
 
-    // This column exists in the Railway database from a previous deployment
-    // with a NOT NULL constraint. Must be mapped to avoid insert failures.
-    @Column(name = "join_code")
+    @Column(name = "join_code", nullable = false)
     private String joinCode;
 }

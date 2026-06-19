@@ -44,6 +44,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
             if (jwtService.isTokenValid(jwt, userDetails)) {
+                if (userDetails instanceof com.cpi.cpi_backend.entity.Coach) {
+                    com.cpi.cpi_backend.entity.Coach coach = (com.cpi.cpi_backend.entity.Coach) userDetails;
+                    if ("PENDING".equals(coach.getApprovalStatus()) || "REJECTED".equals(coach.getApprovalStatus())) {
+                        String path = request.getRequestURI();
+                        if (!path.equals("/api/profile") && !path.startsWith("/api/auth")) {
+                            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                            response.setContentType("application/json");
+                            response.getWriter().write("{\"message\":\"Your account is pending approval or has been rejected.\",\"status\":403}");
+                            return;
+                        }
+                    }
+                }
+
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,
                         null,

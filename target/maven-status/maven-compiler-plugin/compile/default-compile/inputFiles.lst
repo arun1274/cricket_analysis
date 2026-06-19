@@ -3,6 +3,7 @@
 /home/gowtham/Desktop/Cricket_Analysis/src/main/java/com/cpi/cpi_backend/controller/DashboardController.java
 /home/gowtham/Desktop/Cricket_Analysis/src/main/java/com/cpi/cpi_backend/controller/GlobalExceptionHandler.java
 /home/gowtham/Desktop/Cricket_Analysis/src/main/java/com/cpi/cpi_backend/controller/MatchController.java
+/home/gowtham/Desktop/Cricket_Analysis/src/main/java/com/cpi/cpi_backend/controller/OrganizationController.java
 /home/gowtham/Desktop/Cricket_Analysis/src/main/java/com/cpi/cpi_backend/controller/PlayerController.java
 /home/gowtham/Desktop/Cricket_Analysis/src/main/java/com/cpi/cpi_backend/controller/PracticeController.java
 /home/gowtham/Desktop/Cricket_Analysis/src/main/java/com/cpi/cpi_backend/controller/ProfileController.java

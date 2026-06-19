@@ -9,4 +9,5 @@ import java.util.Optional;
 @Repository
 public interface CoachRepository extends JpaRepository<Coach, Long> {
     Optional<Coach> findByEmail(String email);
+    java.util.List<Coach> findByOrganizationId(Long organizationId);
 }

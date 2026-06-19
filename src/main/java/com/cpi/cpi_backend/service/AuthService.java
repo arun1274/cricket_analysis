@@ -25,25 +25,53 @@ public class AuthService {
     private final com.cpi.cpi_backend.repository.OrganizationRepository organizationRepository;
 
     public AuthenticationResponse register(RegisterRequest request) {
-        // Automatically create a new organization for the coach
-        var org = com.cpi.cpi_backend.entity.Organization.builder()
-                .name(request.getName() + " Academy")
-                .joinCode(java.util.UUID.randomUUID().toString().substring(0, 8))
-                .build();
-        org = organizationRepository.save(org);
+        if (request.isCreateOrganization()) {
+            // Option 1: Create Organization
+            var org = com.cpi.cpi_backend.entity.Organization.builder()
+                    .name(request.getOrganizationName())
+                    .type(request.getOrganizationType())
+                    .sport(request.getSport())
+                    .country(request.getCountry())
+                    .city(request.getCity())
+                    .description(request.getDescription())
+                    .joinCode(java.util.UUID.randomUUID().toString().substring(0, 8).toUpperCase())
+                    .build();
+            org = organizationRepository.save(org);
 
-        var user = Coach.builder()
-                .name(request.getName())
-                .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .role(Role.USER)
-                .organization(org)
-                .build();
-        repository.save(user);
-        var jwtToken = jwtService.generateToken(user);
-        return AuthenticationResponse.builder()
-                .token(jwtToken)
-                .build();
+            var user = Coach.builder()
+                    .name(request.getName())
+                    .email(request.getEmail())
+                    .password(passwordEncoder.encode(request.getPassword()))
+                    .role(Role.ADMIN) // Admin of organization
+                    .approvalStatus("APPROVED") // Auto-approved
+                    .organization(org)
+                    .build();
+            repository.save(user);
+
+            var jwtToken = jwtService.generateToken(user);
+            return AuthenticationResponse.builder()
+                    .token(jwtToken)
+                    .build();
+        } else {
+            // Option 2: Join As Coach
+            var org = organizationRepository.findByJoinCode(request.getJoinCode().trim().toUpperCase())
+                    .orElseThrow(() -> new RuntimeException("Invalid Organization Join Code. Please check and try again."));
+
+            var user = Coach.builder()
+                    .name(request.getName())
+                    .email(request.getEmail())
+                    .password(passwordEncoder.encode(request.getPassword()))
+                    .role(Role.USER) // Standard Coach
+                    .approvalStatus("PENDING") // Needs Admin approval
+                    .organization(org)
+                    .build();
+            repository.save(user);
+
+            var jwtToken = jwtService.generateToken(user);
+            return AuthenticationResponse.builder()
+                    .token(jwtToken)
+                    .build();
+        }
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {

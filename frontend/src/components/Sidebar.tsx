@@ -1,10 +1,23 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Users, UserSquare2, Target, Trophy, FileBarChart, LogOut } from "lucide-react";
+import { LayoutDashboard, Users, UserSquare2, Target, Trophy, FileBarChart, LogOut, Building } from "lucide-react";
 import { clsx } from "clsx";
+import { useEffect, useState } from "react";
+import { api } from "@/lib/api";
 
 export function Sidebar() {
   const pathname = usePathname();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    api.get("/profile")
+      .then((res) => {
+        if (res.data.role === "ADMIN") {
+          setIsAdmin(true);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const navItems = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -14,6 +27,10 @@ export function Sidebar() {
     { name: "Matches (MPI)", href: "/matches", icon: Trophy },
     { name: "Reports", href: "/reports", icon: FileBarChart },
   ];
+
+  if (isAdmin) {
+    navItems.push({ name: "Organization", href: "/organization", icon: Building });
+  }
 
   return (
     <div className="w-64 border-r border-white/10 bg-black/50 backdrop-blur-xl h-screen fixed left-0 top-0 flex flex-col">

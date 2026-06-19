@@ -24,9 +24,11 @@ public class ProfileController {
                 "name", currentCoach.getName(),
                 "email", currentCoach.getEmail(),
                 "role", currentCoach.getRole().name(),
+                "approvalStatus", currentCoach.getApprovalStatus() != null ? currentCoach.getApprovalStatus() : "APPROVED",
                 "organization", currentCoach.getOrganization() != null ? Map.of(
                         "id", currentCoach.getOrganization().getId(),
-                        "name", currentCoach.getOrganization().getName()
+                        "name", currentCoach.getOrganization().getName(),
+                        "joinCode", currentCoach.getOrganization().getJoinCode() != null ? currentCoach.getOrganization().getJoinCode() : ""
                 ) : Map.of()
         ));
     }

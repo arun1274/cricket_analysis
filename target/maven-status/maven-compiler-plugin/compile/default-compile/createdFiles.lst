@@ -38,6 +38,7 @@ com/cpi/cpi_backend/repository/OrganizationRepository.class
 com/cpi/cpi_backend/CpiBackendApplication.class
 com/cpi/cpi_backend/security/ApplicationConfig.class
 com/cpi/cpi_backend/security/JwtService.class
+com/cpi/cpi_backend/controller/OrganizationController.class
 com/cpi/cpi_backend/entity/Player.class
 com/cpi/cpi_backend/dto/TeamRequest$TeamRequestBuilder.class
 com/cpi/cpi_backend/dto/DashboardStatsResponse$TrendDto.class
