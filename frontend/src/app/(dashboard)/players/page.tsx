@@ -298,46 +298,47 @@ export default function PlayersPage() {
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredPlayers.map(player => (
             <motion.div 
               key={player.id}
               layout
-              whileHover={{ y: -4 }}
-              className="bg-white/5 border border-white/10 p-6 rounded-3xl hover:bg-white/10 hover:border-orange-500/40 transition-all duration-300 flex flex-col relative group overflow-hidden"
+              whileHover={{ y: -2 }}
+              whileTap={{ scale: 0.98 }}
+              className="bg-white/5 border border-white/10 p-4 rounded-2xl hover:bg-white/10 hover:border-orange-500/40 transition-all duration-200 flex flex-col relative group overflow-hidden"
             >
               {/* Accent glow line */}
               <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-orange-500 to-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity" />
 
               {/* Action Buttons overlay */}
-              <div className="absolute top-4 right-4 flex gap-1.5 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-200">
+              <div className="absolute top-3 right-3 flex gap-1 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-200">
                 <button 
                   onClick={() => handleEditInit(player)}
-                  className="p-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/15 hover:border-white/20 text-zinc-300 hover:text-white transition-colors cursor-pointer"
+                  className="p-1.5 rounded-lg bg-white/5 border border-white/10 hover:bg-white/15 hover:border-white/20 text-zinc-300 hover:text-white transition-colors cursor-pointer"
                   title="Edit Player"
                 >
-                  <Pencil className="w-4 h-4" />
+                  <Pencil className="w-3.5 h-3.5" />
                 </button>
                 <button 
                   onClick={() => setDeletingPlayer(player)}
-                  className="p-2 rounded-lg bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 hover:border-red-500/30 text-red-400 hover:text-red-300 transition-colors cursor-pointer"
+                  className="p-1.5 rounded-lg bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 hover:border-red-500/30 text-red-400 hover:text-red-300 transition-colors cursor-pointer"
                   title="Delete Player"
                 >
-                  <Trash2 className="w-4 h-4" />
+                  <Trash2 className="w-3.5 h-3.5" />
                 </button>
               </div>
 
               {/* Card Body */}
-              <div className="flex-1 space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center text-orange-500">
-                    <UserSquare2 className="w-5 h-5" />
+              <div className="flex-1 space-y-2.5">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center text-orange-500 shrink-0">
+                    <UserSquare2 className="w-4 h-4" />
                   </div>
-                  <div>
-                    <h3 className="font-bold text-lg text-white group-hover:text-orange-500 transition-colors pr-16 truncate">
+                  <div className="min-w-0 flex-1">
+                    <h3 className="font-bold text-base text-white group-hover:text-orange-500 transition-colors pr-12 truncate">
                       {player.name}
                     </h3>
-                    <p className="text-xs text-orange-500/90 font-medium tracking-tight">
+                    <p className="text-[10px] text-orange-500/90 font-semibold tracking-tight truncate">
                       {player.teams && player.teams.length > 0 
                         ? player.teams.map(t => t.name).join(", ") 
                         : player.team?.name || "Unassigned"}
@@ -346,15 +347,15 @@ export default function PlayersPage() {
                 </div>
 
                 {/* Specialties tags */}
-                <div className="flex flex-wrap gap-1.5 pt-2">
-                  <span className="text-[10px] font-semibold bg-white/5 border border-white/10 px-2 py-0.5 rounded-full text-zinc-300 uppercase tracking-wider">
+                <div className="flex flex-wrap gap-1">
+                  <span className="text-[9px] font-semibold bg-white/5 border border-white/10 px-1.5 py-0.5 rounded text-zinc-300 uppercase tracking-wider">
                     {player.role}
                   </span>
-                  <span className="text-[10px] font-semibold bg-indigo-500/10 border border-indigo-500/20 px-2 py-0.5 rounded-full text-indigo-300">
+                  <span className="text-[9px] font-semibold bg-indigo-500/10 border border-indigo-500/20 px-1.5 py-0.5 rounded text-indigo-300">
                     {player.battingStyle}
                   </span>
                   {player.bowlingStyle && player.bowlingStyle !== "None" && (
-                    <span className="text-[10px] font-semibold bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full text-emerald-300">
+                    <span className="text-[9px] font-semibold bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded text-emerald-300">
                       {player.bowlingStyle}
                     </span>
                   )}
@@ -362,14 +363,14 @@ export default function PlayersPage() {
               </div>
 
               {/* Score indicators */}
-              <div className="grid grid-cols-2 gap-4 mt-6 pt-4 border-t border-white/10 text-center">
-                <div className="bg-white/5 border border-white/5 rounded-2xl py-2 px-3">
-                  <p className="text-zinc-500 text-[10px] uppercase tracking-wider mb-0.5">PPI Rating</p>
-                  <p className="font-extrabold text-orange-500 text-base">{player.ppiScore ? player.ppiScore.toFixed(1) : "0.0"}</p>
+              <div className="grid grid-cols-2 gap-2 mt-4 pt-3 border-t border-white/10 text-center">
+                <div className="bg-white/5 border border-white/5 rounded-xl py-1 px-2">
+                  <p className="text-zinc-500 text-[9px] uppercase tracking-wider">PPI Rating</p>
+                  <p className="font-extrabold text-orange-500 text-sm mt-0.5">{player.ppiScore ? player.ppiScore.toFixed(1) : "0.0"}</p>
                 </div>
-                <div className="bg-white/5 border border-white/5 rounded-2xl py-2 px-3">
-                  <p className="text-zinc-500 text-[10px] uppercase tracking-wider mb-0.5">MPI Rating</p>
-                  <p className="font-extrabold text-emerald-400 text-base">{player.mpiScore ? player.mpiScore.toFixed(1) : "0.0"}</p>
+                <div className="bg-white/5 border border-white/5 rounded-xl py-1 px-2">
+                  <p className="text-zinc-500 text-[9px] uppercase tracking-wider">MPI Rating</p>
+                  <p className="font-extrabold text-emerald-400 text-sm mt-0.5">{player.mpiScore ? player.mpiScore.toFixed(1) : "0.0"}</p>
                 </div>
               </div>
             </motion.div>

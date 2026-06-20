@@ -303,58 +303,59 @@ export default function TeamsPage() {
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {teams.map(team => {
             const squadCount = getPlayerCount(team.id);
             return (
               <motion.div 
                 key={team.id} 
                 layout
-                whileHover={{ y: -4 }}
-                className="bg-white/5 border border-white/10 p-6 rounded-3xl hover:bg-white/10 hover:border-orange-500/40 hover:shadow-[0_8px_30px_rgb(249,115,22,0.06)] transition-all duration-300 flex flex-col relative group overflow-hidden"
+                whileHover={{ y: -2 }}
+                whileTap={{ scale: 0.98 }}
+                className="bg-white/5 border border-white/10 p-4 rounded-2xl hover:bg-white/10 hover:border-orange-500/40 hover:shadow-[0_8px_30px_rgb(249,115,22,0.06)] transition-all duration-200 flex flex-col relative group overflow-hidden"
               >
                 {/* Accent glow bar */}
                 <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-orange-500 to-amber-500 opacity-0 group-hover:opacity-100 transition-opacity" />
 
-                <div className="flex justify-between items-start mb-6">
-                  <div className="w-12 h-12 rounded-2xl bg-orange-500/10 flex items-center justify-center group-hover:bg-orange-500/20 transition-colors">
-                    <Users className="w-6 h-6 text-orange-500" />
+                <div className="flex justify-between items-center mb-3">
+                  <div className="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center group-hover:bg-orange-500/20 transition-colors">
+                    <Users className="w-4 h-4 text-orange-500" />
                   </div>
-                  <div className="flex gap-1.5 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-200">
+                  <div className="flex gap-1 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-200">
                     <button 
                       onClick={() => handleEditInit(team)}
-                      className="p-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/15 hover:border-white/20 text-zinc-300 hover:text-white transition-colors cursor-pointer"
+                      className="p-1.5 rounded-lg bg-white/5 border border-white/10 hover:bg-white/15 hover:border-white/20 text-zinc-300 hover:text-white transition-colors cursor-pointer"
                       title="Edit Team"
                     >
-                      <Pencil className="w-4 h-4" />
+                      <Pencil className="w-3.5 h-3.5" />
                     </button>
                     <button 
                       onClick={() => setDeletingTeam(team)}
-                      className="p-2 rounded-lg bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 hover:border-red-500/30 text-red-400 hover:text-red-300 transition-colors cursor-pointer"
+                      className="p-1.5 rounded-lg bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 hover:border-red-500/30 text-red-400 hover:text-red-300 transition-colors cursor-pointer"
                       title="Delete Team"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 className="w-3.5 h-3.5" />
                     </button>
                   </div>
                 </div>
 
                 <div className="flex-1">
-                  <h3 className="text-2xl font-bold tracking-tight mb-1 text-white group-hover:text-orange-500 transition-colors">
+                  <h3 className="text-lg font-bold tracking-tight mb-0.5 text-white group-hover:text-orange-500 transition-colors truncate">
                     {team.name}
                   </h3>
-                  <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-white/5 border border-white/10 text-zinc-300 uppercase tracking-wider mb-6">
+                  <span className="inline-block px-2 py-0.5 rounded text-[10px] font-semibold bg-white/5 border border-white/10 text-zinc-400 uppercase tracking-wider mb-3">
                     {team.level}
                   </span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/10 text-sm">
+                <div className="grid grid-cols-2 gap-2 pt-3 border-t border-white/10 text-xs">
                   <div>
-                    <p className="text-zinc-500 text-xs uppercase tracking-wider mb-1">Squad Strength</p>
-                    <p className="font-semibold text-white">{squadCount} {squadCount === 1 ? 'Player' : 'Players'}</p>
+                    <p className="text-zinc-500 text-[10px] uppercase tracking-wider mb-0.5">Squad Strength</p>
+                    <p className="font-semibold text-white text-xs">{squadCount} {squadCount === 1 ? 'Player' : 'Players'}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-zinc-500 text-xs uppercase tracking-wider mb-1">CPI Rating</p>
-                    <p className="font-extrabold text-orange-500 text-lg">
+                    <p className="text-zinc-500 text-[10px] uppercase tracking-wider mb-0.5">CPI Rating</p>
+                    <p className="font-extrabold text-orange-500 text-sm">
                       {team.teamCpiScore > 0 ? team.teamCpiScore.toFixed(1) : "0.0"}
                     </p>
                   </div>
