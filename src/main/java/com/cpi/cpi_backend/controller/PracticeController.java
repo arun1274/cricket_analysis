@@ -189,6 +189,7 @@ public class PracticeController {
                 .team(team)
                 .name(request.getName())
                 .date(request.getDate())
+                .sessionDate(request.getDate())
                 .playersAssessed(request.getAssessments().size())
                 .averagePpi(0.0)
                 .build();

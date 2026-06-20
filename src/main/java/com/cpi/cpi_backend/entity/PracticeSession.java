@@ -33,6 +33,9 @@ public class PracticeSession {
     @Column(name = "date", nullable = false)
     private LocalDate date;
 
+    @Column(name = "session_date", nullable = false)
+    private LocalDate sessionDate;
+
     private Integer playersAssessed;
     private Double averagePpi;
 
