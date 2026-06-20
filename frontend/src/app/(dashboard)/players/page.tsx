@@ -226,7 +226,7 @@ export default function PlayersPage() {
 
       {/* Filters & Search section */}
       <div className="flex flex-col lg:flex-row gap-4 bg-white/5 border border-white/10 p-4 rounded-3xl backdrop-blur-sm">
-        <div className="relative flex-1">
+        <div className="relative flex-1 w-full">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
           <input 
             type="text"
@@ -237,8 +237,8 @@ export default function PlayersPage() {
           />
         </div>
         
-        <div className="flex flex-wrap md:flex-nowrap gap-3">
-          <div className="flex items-center gap-2 bg-black/20 border border-white/5 px-3 rounded-2xl min-w-[180px]">
+        <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
+          <div className="flex items-center gap-2 bg-black/20 border border-white/5 px-3 rounded-2xl w-full sm:min-w-[180px]">
             <Filter className="w-4 h-4 text-zinc-500" />
             <select
               value={selectedTeamFilter}
@@ -252,7 +252,7 @@ export default function PlayersPage() {
             </select>
           </div>
 
-          <div className="flex items-center gap-2 bg-black/20 border border-white/5 px-3 rounded-2xl min-w-[180px]">
+          <div className="flex items-center gap-2 bg-black/20 border border-white/5 px-3 rounded-2xl w-full sm:min-w-[180px]">
             <UserSquare2 className="w-4 h-4 text-zinc-500" />
             <select
               value={selectedRoleFilter}
@@ -310,7 +310,7 @@ export default function PlayersPage() {
               <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-orange-500 to-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity" />
 
               {/* Action Buttons overlay */}
-              <div className="absolute top-4 right-4 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+              <div className="absolute top-4 right-4 flex gap-1.5 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-200">
                 <button 
                   onClick={() => handleEditInit(player)}
                   className="p-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/15 hover:border-white/20 text-zinc-300 hover:text-white transition-colors cursor-pointer"

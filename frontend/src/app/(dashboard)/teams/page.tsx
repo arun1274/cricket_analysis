@@ -320,7 +320,7 @@ export default function TeamsPage() {
                   <div className="w-12 h-12 rounded-2xl bg-orange-500/10 flex items-center justify-center group-hover:bg-orange-500/20 transition-colors">
                     <Users className="w-6 h-6 text-orange-500" />
                   </div>
-                  <div className="flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                  <div className="flex gap-1.5 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-200">
                     <button 
                       onClick={() => handleEditInit(team)}
                       className="p-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/15 hover:border-white/20 text-zinc-300 hover:text-white transition-colors cursor-pointer"

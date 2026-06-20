@@ -299,7 +299,7 @@ export default function OrganizationPage() {
         )}
 
         {/* Middle Column: Stats Grid */}
-        <div className="grid grid-cols-2 gap-4 lg:col-span-1">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:col-span-1">
           <div className="bg-white/5 border border-white/10 rounded-3xl p-5 flex flex-col justify-between backdrop-blur-md">
             <div className="text-zinc-500 text-xs uppercase font-semibold tracking-wider">Total Coaches</div>
             <div className="mt-4 flex items-baseline justify-between">

@@ -113,12 +113,12 @@ export default function MatchesPage() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-white via-zinc-200 to-zinc-400 bg-clip-text text-transparent">Match Assessment</h1>
           <p className="text-zinc-400 mt-1">Calculate Match Performance Index (MPI) for a player.</p>
         </div>
-        <div className="text-right bg-white/5 border border-white/10 px-6 py-3 rounded-2xl backdrop-blur-xl">
+        <div className="text-left sm:text-right bg-white/5 border border-white/10 px-6 py-3 rounded-2xl backdrop-blur-xl w-full sm:w-auto">
           <p className="text-xs text-zinc-400 font-medium uppercase tracking-wider mb-0.5">Calculated MPI</p>
           <div className="text-4xl font-extrabold text-emerald-400">{mpiScore}</div>
         </div>
@@ -135,7 +135,7 @@ export default function MatchesPage() {
         </div>
       )}
 
-      <div className="bg-white/5 border border-white/10 p-8 rounded-3xl space-y-8 backdrop-blur-xl">
+      <div className="bg-white/5 border border-white/10 p-4 sm:p-8 rounded-3xl space-y-8 backdrop-blur-xl">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
             <label className="text-sm font-medium text-zinc-300">Select Player</label>
@@ -179,7 +179,7 @@ export default function MatchesPage() {
                 step="1"
                 value={scores[metric]}
                 onChange={(e) => setScores({ ...scores, [metric]: parseInt(e.target.value) })}
-                className="w-full h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                className="w-full h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-emerald-500 py-1"
               />
             </div>
           ))}

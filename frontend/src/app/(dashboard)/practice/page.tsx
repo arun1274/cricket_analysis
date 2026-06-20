@@ -794,8 +794,9 @@ export default function PracticePage() {
           </div>
 
           {/* Details Table */}
-          <div className="bg-white/5 border border-white/10 rounded-3xl p-6 md:p-8 backdrop-blur-xl">
-            <div className="overflow-x-auto">
+          <div className="bg-white/5 border border-white/10 rounded-3xl p-4 md:p-8 backdrop-blur-xl">
+            {/* Desktop Table View */}
+            <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="border-b border-white/10 text-zinc-400 text-xs font-semibold uppercase tracking-wider">
@@ -835,6 +836,55 @@ export default function PracticePage() {
                   ))}
                 </tbody>
               </table>
+            </div>
+
+            {/* Mobile Card List View */}
+            <div className="block md:hidden space-y-4">
+              {selectedSessionDetails.assessments.map((ass) => (
+                <div key={ass.id} className="bg-white/5 border border-white/10 rounded-2xl p-4 space-y-3">
+                  <div className="flex justify-between items-start border-b border-white/5 pb-2">
+                    <div>
+                      <div className="font-bold text-white text-base">{ass.player.name}</div>
+                      <div className="text-xs text-zinc-500">{ass.player.role}</div>
+                    </div>
+                    <span className="text-orange-400 font-bold bg-orange-500/10 px-2.5 py-1 rounded border border-orange-500/20 text-xs">
+                      PPI: {ass.ppiScore.toFixed(1)}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2 text-center text-xs">
+                    <div className="bg-white/5 p-1.5 rounded border border-white/5">
+                      <span className="text-[9px] text-zinc-500 block uppercase font-medium">TEC</span>
+                      <span className="font-semibold text-zinc-300">{ass.technique}</span>
+                    </div>
+                    <div className="bg-white/5 p-1.5 rounded border border-white/5">
+                      <span className="text-[9px] text-zinc-500 block uppercase font-medium">INT</span>
+                      <span className="font-semibold text-zinc-300">{ass.intensity}</span>
+                    </div>
+                    <div className="bg-white/5 p-1.5 rounded border border-white/5">
+                      <span className="text-[9px] text-zinc-500 block uppercase font-medium">EXE</span>
+                      <span className="font-semibold text-zinc-300">{ass.execution}</span>
+                    </div>
+                    <div className="bg-white/5 p-1.5 rounded border border-white/5">
+                      <span className="text-[9px] text-zinc-500 block uppercase font-medium">ADA</span>
+                      <span className="font-semibold text-zinc-300">{ass.adaptability}</span>
+                    </div>
+                    <div className="bg-white/5 p-1.5 rounded border border-white/5">
+                      <span className="text-[9px] text-zinc-500 block uppercase font-medium">DIS</span>
+                      <span className="font-semibold text-zinc-300">{ass.discipline}</span>
+                    </div>
+                    <div className="bg-white/5 p-1.5 rounded border border-white/5">
+                      <span className="text-[9px] text-zinc-500 block uppercase font-medium">FOC</span>
+                      <span className="font-semibold text-zinc-300">{ass.focus}</span>
+                    </div>
+                  </div>
+                  {ass.notes && (
+                    <div className="text-xs text-zinc-400 pt-2 border-t border-white/5">
+                      <span className="text-zinc-500 font-semibold block mb-0.5">Notes:</span>
+                      {ass.notes}
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -917,7 +967,7 @@ export default function PracticePage() {
                     step="1"
                     value={tempScores[metric]}
                     onChange={(e) => setTempScores({ ...tempScores, [metric]: parseInt(e.target.value) })}
-                    className="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-orange-500"
+                    className="w-full h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-orange-500 py-1"
                   />
                 </div>
               ))}
