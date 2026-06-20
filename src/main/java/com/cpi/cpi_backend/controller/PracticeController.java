@@ -162,6 +162,12 @@ public class PracticeController {
             @RequestBody com.cpi.cpi_backend.dto.PracticeSessionRequest request,
             @AuthenticationPrincipal Coach currentCoach
     ) {
+        if (request.getDate() == null) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.BAD_REQUEST, "Session date is required."
+            );
+        }
+
         Team team = teamRepository.findById(request.getTeamId())
                 .orElseThrow(() -> new RuntimeException("Team not found"));
 

@@ -32,7 +32,7 @@ public class PracticeAssessment {
     @com.fasterxml.jackson.annotation.JsonIgnore
     private PracticeSession session;
 
-    @Column(nullable = false)
+    @Column(name = "session_date", nullable = false)
     private LocalDate date;
 
     private Integer technique;
