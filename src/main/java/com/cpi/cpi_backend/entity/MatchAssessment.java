@@ -32,6 +32,10 @@ public class MatchAssessment {
     @com.fasterxml.jackson.annotation.JsonIgnore
     private MatchSession session;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "coach_id")
+    private Coach coach;
+
     @Column(nullable = false)
     private LocalDate date;
 

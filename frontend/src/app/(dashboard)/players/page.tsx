@@ -788,6 +788,7 @@ export default function PlayersPage() {
                       focus: 7,
                       notes: ""
                     });
+                    setError("");
                     setShowPracticeOverlay(true);
                   }}
                   className="w-full bg-orange-500 hover:bg-orange-600 text-black rounded-2xl py-5 text-xl font-extrabold flex items-center justify-center gap-3 transition-all active:scale-[0.98] border border-orange-400 shadow-md cursor-pointer"
@@ -807,6 +808,7 @@ export default function PlayersPage() {
                       matchImpact: 7,
                       notes: ""
                     });
+                    setError("");
                     setShowMatchOverlay(true);
                   }}
                   className="w-full bg-orange-500 hover:bg-orange-600 text-black rounded-2xl py-5 text-xl font-extrabold flex items-center justify-center gap-3 transition-all active:scale-[0.98] border border-orange-400 shadow-md cursor-pointer"
@@ -866,6 +868,12 @@ export default function PlayersPage() {
               <X className="w-7 h-7" />
             </button>
           </div>
+
+          {error && (
+            <div className="bg-red-500/10 border border-red-500/30 text-red-500 text-xs font-bold p-4 rounded-xl uppercase tracking-wider">
+              {error}
+            </div>
+          )}
 
           <form onSubmit={handlePracticeSubmit} className="space-y-6">
             {[
@@ -928,6 +936,12 @@ export default function PlayersPage() {
               <X className="w-7 h-7" />
             </button>
           </div>
+
+          {error && (
+            <div className="bg-red-500/10 border border-red-500/30 text-red-500 text-xs font-bold p-4 rounded-xl uppercase tracking-wider">
+              {error}
+            </div>
+          )}
 
           <form onSubmit={handleMatchSubmit} className="space-y-6">
             {[

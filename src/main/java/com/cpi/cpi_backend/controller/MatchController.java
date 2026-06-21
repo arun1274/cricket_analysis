@@ -38,30 +38,47 @@ public class MatchController {
             @RequestBody MatchAssessmentRequest request,
             @AuthenticationPrincipal Coach currentCoach
     ) {
+        if (currentCoach == null || currentCoach.getId() == null) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.BAD_REQUEST, "Coach information is missing from authentication."
+            );
+        }
+
         Player player = playerRepository.findById(request.getPlayerId())
-                .orElseThrow(() -> new RuntimeException("Player not found"));
+                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
+                        org.springframework.http.HttpStatus.BAD_REQUEST, "Player not found."
+                ));
 
         // Verify authorization
         Coach managedCoach = coachRepository.findById(currentCoach.getId())
-                .orElseThrow(() -> new RuntimeException("Coach not found"));
+                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
+                        org.springframework.http.HttpStatus.BAD_REQUEST, "Coach not found."
+                ));
+
         boolean authorized = false;
-        if (managedCoach.getRole() == com.cpi.cpi_backend.entity.Role.ADMIN) {
-            authorized = player.getOrganization() != null && managedCoach.getOrganization() != null &&
-                    player.getOrganization().getId().equals(managedCoach.getOrganization().getId());
-        } else {
-            authorized = player.getCreatorCoach() != null && player.getCreatorCoach().getId().equals(managedCoach.getId());
+        if (player.getOrganization() != null && managedCoach.getOrganization() != null &&
+                player.getOrganization().getId().equals(managedCoach.getOrganization().getId())) {
+            authorized = true;
+        } else if (player.getCreatorCoach() != null && player.getCreatorCoach().getId().equals(managedCoach.getId())) {
+            authorized = true;
         }
+
         if (!authorized) {
-            throw new RuntimeException("Unauthorized");
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.FORBIDDEN, "You are not authorized to assess this player."
+            );
         }
 
         // Calculate MPI
         double mpi = (request.getTechnicalExecution() + request.getDecisionMaking() + request.getGameAwareness() +
                 request.getPressureHandling() + request.getTeamContribution() + request.getMatchImpact()) / 6.0;
 
+        java.time.LocalDate assessmentDate = request.getDate() != null ? request.getDate() : java.time.LocalDate.now();
+
         MatchAssessment assessment = MatchAssessment.builder()
                 .player(player)
-                .date(request.getDate())
+                .coach(managedCoach)
+                .date(assessmentDate)
                 .technicalExecution(request.getTechnicalExecution())
                 .decisionMaking(request.getDecisionMaking())
                 .gameAwareness(request.getGameAwareness())

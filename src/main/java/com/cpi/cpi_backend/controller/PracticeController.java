@@ -35,7 +35,9 @@ public class PracticeController {
             @AuthenticationPrincipal Coach currentCoach
     ) {
         Player player = playerRepository.findById(request.getPlayerId())
-                .orElseThrow(() -> new RuntimeException("Player not found"));
+                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
+                        org.springframework.http.HttpStatus.BAD_REQUEST, "Player not found."
+                ));
 
         if (currentCoach == null || currentCoach.getId() == null) {
             throw new org.springframework.web.server.ResponseStatusException(
@@ -46,25 +48,31 @@ public class PracticeController {
                 .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
                         org.springframework.http.HttpStatus.BAD_REQUEST, "Coach not found."
                 ));
+
         boolean authorized = false;
-        if (managedCoach.getRole() == com.cpi.cpi_backend.entity.Role.ADMIN) {
-            authorized = player.getOrganization() != null && managedCoach.getOrganization() != null &&
-                    player.getOrganization().getId().equals(managedCoach.getOrganization().getId());
-        } else {
-            authorized = player.getCreatorCoach() != null && player.getCreatorCoach().getId().equals(managedCoach.getId());
+        if (player.getOrganization() != null && managedCoach.getOrganization() != null &&
+                player.getOrganization().getId().equals(managedCoach.getOrganization().getId())) {
+            authorized = true;
+        } else if (player.getCreatorCoach() != null && player.getCreatorCoach().getId().equals(managedCoach.getId())) {
+            authorized = true;
         }
+
         if (!authorized) {
-            throw new RuntimeException("Unauthorized");
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.FORBIDDEN, "You are not authorized to assess this player."
+            );
         }
 
         // Calculate PPI
         double ppi = (request.getTechnique() + request.getIntensity() + request.getExecution() +
                 request.getAdaptability() + request.getDiscipline() + request.getFocus()) / 6.0;
 
+        java.time.LocalDate assessmentDate = request.getDate() != null ? request.getDate() : java.time.LocalDate.now();
+
         PracticeAssessment assessment = PracticeAssessment.builder()
                 .player(player)
                 .coach(managedCoach)
-                .date(request.getDate())
+                .date(assessmentDate)
                 .technique(request.getTechnique())
                 .intensity(request.getIntensity())
                 .execution(request.getExecution())
