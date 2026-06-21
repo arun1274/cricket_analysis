@@ -2,11 +2,10 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { api } from "@/lib/api";
-import { ArrowRight, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -24,6 +23,14 @@ export default function LoginPage() {
       const response = await api.post("/auth/login", { email, password });
       if (response.data.token) {
         localStorage.setItem("token", response.data.token);
+        
+        // Fetch profile to resolve the role
+        const profileRes = await api.get("/profile", {
+          headers: { Authorization: `Bearer ${response.data.token}` }
+        });
+        
+        const userRole = profileRes.data.role === "USER" ? "player" : "coach";
+        localStorage.setItem("userRole", userRole);
         router.push("/dashboard");
       }
     } catch (err: any) {
@@ -34,102 +41,83 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-6 text-white">
-      {/* Abstract background */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-orange-500/10 rounded-full blur-[120px] pointer-events-none" />
-
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.4 }}
-        className="w-full max-w-md relative z-10"
-      >
-        <div className="text-center mb-8">
-          {/* CPI Official Logo */}
-          <div className="relative w-24 h-28 mx-auto mb-5">
+    <div className="min-h-screen bg-black text-white flex flex-col justify-between p-6 select-none">
+      <div className="my-auto max-w-md w-full mx-auto space-y-8">
+        
+        {/* Logo and Welcome */}
+        <div className="text-center">
+          <div className="relative w-28 h-32 mx-auto mb-6">
             <Image
               src="/cpi-logo.png"
-              alt="CPI - Cricket Performance Index"
+              alt="CPI Logo"
               fill
-              className="object-contain drop-shadow-lg"
+              className="object-contain"
               priority
             />
           </div>
-          <h1 className="text-3xl font-bold tracking-tight mb-2">Welcome Back</h1>
-          <p className="text-zinc-400">Log in to access your analytics dashboard</p>
+          <h1 className="text-4xl font-black tracking-tight text-white mb-2">WELCOME</h1>
+          <p className="text-zinc-400 text-lg font-bold">Cricket Performance Index</p>
         </div>
 
-        <div className="bg-white/5 border border-white/10 rounded-3xl p-8 backdrop-blur-xl">
-          <form onSubmit={handleLogin} className="space-y-6">
-            {error && (
-              <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-4 rounded-xl text-sm">
-                {error}
-              </div>
-            )}
-            
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-zinc-300">Email Address</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-zinc-600 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-colors"
-                placeholder="coach@team.com"
-              />
+        {/* Main form */}
+        <form onSubmit={handleLogin} className="space-y-6">
+          {error && (
+            <div className="bg-red-950 border-2 border-red-500 text-red-200 p-4 rounded-xl text-sm font-bold text-center">
+              {error}
             </div>
+          )}
 
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <label className="text-sm font-medium text-zinc-300">Password</label>
-                <Link href="#" className="text-sm text-orange-500 hover:text-orange-400 transition-colors">
-                  Forgot password?
-                </Link>
-              </div>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-zinc-600 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-colors"
-                placeholder="••••••••"
-              />
-            </div>
-
-            <div className="flex items-center justify-between">
-              <label className="flex items-center gap-2 cursor-pointer select-none">
-                <input
-                  type="checkbox"
-                  className="w-4 h-4 rounded border-white/10 bg-black/50 text-orange-600 focus:ring-orange-500 focus:ring-offset-0 focus:ring-0 accent-orange-600"
-                />
-                <span className="text-sm text-zinc-300">Remember Me</span>
-              </label>
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-orange-600 hover:bg-orange-500 text-white rounded-xl py-3.5 font-medium transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {loading ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
-              ) : (
-                <>
-                  Sign In
-                  <ArrowRight className="w-4 h-4" />
-                </>
-              )}
-            </button>
-          </form>
-
-          <div className="mt-6 text-center text-sm text-zinc-400">
-            Don't have an account?{" "}
-            <Link href="/signup" className="text-orange-500 hover:text-orange-400 font-medium transition-colors">
-              Sign up
-            </Link>
+          <div className="space-y-2">
+            <label className="text-sm font-black tracking-wide text-zinc-300 block">EMAIL ADDRESS</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="w-full bg-zinc-950 border-2 border-zinc-800 rounded-xl px-4 py-4 text-lg text-white font-semibold focus:outline-none focus:border-orange-500 transition-colors"
+              placeholder="Enter your email"
+            />
           </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-black tracking-wide text-zinc-300 block">PASSWORD</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="w-full bg-zinc-950 border-2 border-zinc-800 rounded-xl px-4 py-4 text-lg text-white font-semibold focus:outline-none focus:border-orange-500 transition-colors"
+              placeholder="Enter your password"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-white hover:bg-zinc-200 text-black rounded-xl py-4.5 text-xl font-black transition-all flex items-center justify-center gap-2 cursor-pointer border-2 border-white shadow-xl"
+          >
+            {loading ? (
+              <Loader2 className="w-6 h-6 animate-spin text-black" />
+            ) : (
+              "SIGN IN"
+            )}
+          </button>
+        </form>
+
+        <div className="text-center pt-4">
+          <Link
+            href="/signup"
+            className="text-orange-500 hover:text-orange-400 text-lg font-black tracking-wide block py-2.5"
+          >
+            CREATE NEW ACCOUNT
+          </Link>
         </div>
-      </motion.div>
+
+      </div>
+
+      <div className="text-center text-xs text-zinc-600 font-bold uppercase tracking-widest py-4">
+        Mobile Sunlight Optimized • Simple UX
+      </div>
     </div>
   );
 }

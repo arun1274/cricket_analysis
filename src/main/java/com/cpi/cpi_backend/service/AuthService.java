@@ -53,16 +53,35 @@ public class AuthService {
                     .token(jwtToken)
                     .build();
         } else {
-            // Option 2: Join As Coach
-            var org = organizationRepository.findByJoinCode(request.getJoinCode().trim().toUpperCase())
-                    .orElseThrow(() -> new RuntimeException("Invalid Organization Join Code. Please check and try again."));
+            // Option 2: Join As Player / Standard Coach
+            com.cpi.cpi_backend.entity.Organization org;
+            String code = request.getJoinCode();
+            if (code == null || code.trim().isEmpty()) {
+                var list = organizationRepository.findAll();
+                if (!list.isEmpty()) {
+                    org = list.get(0);
+                } else {
+                    org = com.cpi.cpi_backend.entity.Organization.builder()
+                            .name("Default Academy")
+                            .type("Academy")
+                            .sport("Cricket")
+                            .country("India")
+                            .city("Default")
+                            .joinCode("DEFAULT")
+                            .build();
+                    org = organizationRepository.save(org);
+                }
+            } else {
+                org = organizationRepository.findByJoinCode(code.trim().toUpperCase())
+                        .orElseThrow(() -> new RuntimeException("Invalid Organization Join Code. Please check and try again."));
+            }
 
             var user = Coach.builder()
                     .name(request.getName())
                     .email(request.getEmail())
                     .password(passwordEncoder.encode(request.getPassword()))
-                    .role(Role.USER) // Standard Coach
-                    .approvalStatus("PENDING") // Needs Admin approval
+                    .role(Role.USER) // Standard Coach / Player
+                    .approvalStatus("APPROVED") // Auto-approve for simpler onboarding
                     .organization(org)
                     .build();
             repository.save(user);
