@@ -19,7 +19,7 @@ import {
   Star,
   Plus
 } from "lucide-react";
-import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis, BarChart, Bar } from "recharts";
+import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis, BarChart, Bar, LabelList } from "recharts";
 import { api } from "@/lib/api";
 import { clsx } from "clsx";
 
@@ -115,7 +115,7 @@ export default function DashboardPage() {
           {/* Notification bell */}
           <button className="relative p-2.5 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 text-zinc-400 hover:text-white transition-all cursor-pointer">
             <Bell className="w-4 h-4" />
-            <span className="absolute top-1.5 right-1.5 w-3.5 h-3.5 bg-orange-600 text-[8px] font-black text-white rounded-full flex items-center justify-center border-2 border-[#0a0a0a]">
+            <span className="absolute top-1.5 right-1.5 w-3.5 h-3.5 bg-orange-650 text-[8px] font-black text-white rounded-full flex items-center justify-center border-2 border-[#0a0a0a]">
               3
             </span>
           </button>
@@ -165,13 +165,13 @@ export default function DashboardPage() {
           </select>
         </div>
 
-        {/* Dynamic absolute batsman illustration */}
-        <div className="absolute -right-4 -top-8 w-[380px] h-[380px] pointer-events-none opacity-20 md:opacity-60 lg:opacity-[0.85] mix-blend-screen hidden sm:block z-0 select-none">
+        {/* Dynamic absolute batsman illustration - Positioned precisely to match mockup without clashing */}
+        <div className="absolute -right-16 -top-24 w-[340px] h-[340px] pointer-events-none opacity-70 mix-blend-screen hidden sm:block z-0 select-none">
           <Image 
             src="/batsman-hero.png" 
             alt="Cricket Batsman Illustration" 
             fill 
-            className="object-contain" 
+            className="object-contain mix-blend-screen" 
             priority
           />
         </div>
@@ -189,10 +189,13 @@ export default function DashboardPage() {
           iconColor="text-indigo-400 bg-indigo-500/10 border-indigo-500/20"
           gradient="from-indigo-500/5 to-purple-500/5 hover:border-indigo-500/20"
         >
-          {/* Custom Purple Line Chart SVG */}
-          <svg className="absolute bottom-0 left-0 right-0 h-10 w-full" viewBox="0 0 200 40" fill="none" preserveAspectRatio="none">
+          {/* Custom Purple Line Chart SVG with glowing dots */}
+          <svg className="absolute bottom-0 left-0 right-0 h-10 w-full overflow-visible" viewBox="0 0 200 40" fill="none" preserveAspectRatio="none">
             <path d="M0 40 Q25 20, 50 30 T100 10 T150 25 T200 15 V40 H0" fill="url(#purpleGlow)" />
-            <path d="M0 35 Q25 15, 50 25 T100 5 T150 20 T200 10" stroke="#8b5cf6" strokeWidth="2" strokeLinecap="round" />
+            <path d="M0 35 Q25 15, 50 25 T100 5 T150 20 T200 10" stroke="#8b5cf6" strokeWidth="2.5" strokeLinecap="round" />
+            <circle cx="50" cy="25" r="2.5" fill="#fff" className="filter drop-shadow-[0_0_3px_#8b5cf6]" />
+            <circle cx="100" cy="5" r="2.5" fill="#fff" className="filter drop-shadow-[0_0_3px_#8b5cf6]" />
+            <circle cx="150" cy="20" r="2.5" fill="#fff" className="filter drop-shadow-[0_0_3px_#8b5cf6]" />
             <defs>
               <linearGradient id="purpleGlow" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="#8b5cf6" stopOpacity="0.15" />
@@ -212,10 +215,13 @@ export default function DashboardPage() {
           iconColor="text-fuchsia-400 bg-fuchsia-500/10 border-fuchsia-500/20"
           gradient="from-fuchsia-500/5 to-pink-500/5 hover:border-fuchsia-500/20"
         >
-          {/* Custom Pink Line Chart SVG */}
-          <svg className="absolute bottom-0 left-0 right-0 h-10 w-full" viewBox="0 0 200 40" fill="none" preserveAspectRatio="none">
+          {/* Custom Pink Line Chart SVG with glowing dots */}
+          <svg className="absolute bottom-0 left-0 right-0 h-10 w-full overflow-visible" viewBox="0 0 200 40" fill="none" preserveAspectRatio="none">
             <path d="M0 40 Q25 15, 50 25 T100 8 T150 30 T200 10 V40 H0" fill="url(#pinkGlow)" />
-            <path d="M0 35 Q25 10, 50 20 T100 3 T150 25 T200 5" stroke="#ec4899" strokeWidth="2" strokeLinecap="round" />
+            <path d="M0 35 Q25 10, 50 20 T100 3 T150 25 T200 5" stroke="#ec4899" strokeWidth="2.5" strokeLinecap="round" />
+            <circle cx="50" cy="20" r="2.5" fill="#fff" className="filter drop-shadow-[0_0_3px_#ec4899]" />
+            <circle cx="100" cy="3" r="2.5" fill="#fff" className="filter drop-shadow-[0_0_3px_#ec4899]" />
+            <circle cx="150" cy="25" r="2.5" fill="#fff" className="filter drop-shadow-[0_0_3px_#ec4899]" />
             <defs>
               <linearGradient id="pinkGlow" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="#ec4899" stopOpacity="0.15" />
@@ -235,10 +241,13 @@ export default function DashboardPage() {
           iconColor="text-orange-400 bg-orange-500/10 border-orange-500/20"
           gradient="from-orange-500/5 to-red-500/5 hover:border-orange-500/20"
         >
-          {/* Custom Orange Line Chart SVG */}
-          <svg className="absolute bottom-0 left-0 right-0 h-10 w-full" viewBox="0 0 200 40" fill="none" preserveAspectRatio="none">
+          {/* Custom Orange Line Chart SVG with glowing dots */}
+          <svg className="absolute bottom-0 left-0 right-0 h-10 w-full overflow-visible" viewBox="0 0 200 40" fill="none" preserveAspectRatio="none">
             <path d="M0 40 Q25 30, 50 20 T100 15 T150 8 T200 18 V40 H0" fill="url(#orangeGlow)" />
-            <path d="M0 35 Q25 25, 50 15 T100 10 T150 3 T200 13" stroke="#f97316" strokeWidth="2" strokeLinecap="round" />
+            <path d="M0 35 Q25 25, 50 15 T100 10 T150 3 T200 13" stroke="#f97316" strokeWidth="2.5" strokeLinecap="round" />
+            <circle cx="50" cy="15" r="2.5" fill="#fff" className="filter drop-shadow-[0_0_3px_#f97316]" />
+            <circle cx="100" cy="10" r="2.5" fill="#fff" className="filter drop-shadow-[0_0_3px_#f97316]" />
+            <circle cx="150" cy="3" r="2.5" fill="#fff" className="filter drop-shadow-[0_0_3px_#f97316]" />
             <defs>
               <linearGradient id="orangeGlow" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="#f97316" stopOpacity="0.15" />
@@ -258,10 +267,13 @@ export default function DashboardPage() {
           iconColor="text-emerald-400 bg-emerald-500/10 border-emerald-500/20"
           gradient="from-emerald-500/5 to-teal-500/5 hover:border-emerald-500/20"
         >
-          {/* Custom Green Line Chart SVG */}
-          <svg className="absolute bottom-0 left-0 right-0 h-10 w-full" viewBox="0 0 200 40" fill="none" preserveAspectRatio="none">
+          {/* Custom Green Line Chart SVG with glowing dots */}
+          <svg className="absolute bottom-0 left-0 right-0 h-10 w-full overflow-visible" viewBox="0 0 200 40" fill="none" preserveAspectRatio="none">
             <path d="M0 40 Q25 25, 50 35 T100 15 T150 22 T200 8 V40 H0" fill="url(#greenGlow)" />
-            <path d="M0 35 Q25 20, 50 30 T100 10 T150 17 T200 3" stroke="#10b981" strokeWidth="2" strokeLinecap="round" />
+            <path d="M0 35 Q25 20, 50 30 T100 10 T150 17 T200 3" stroke="#10b981" strokeWidth="2.5" strokeLinecap="round" />
+            <circle cx="50" cy="30" r="2.5" fill="#fff" className="filter drop-shadow-[0_0_3px_#10b981]" />
+            <circle cx="100" cy="10" r="2.5" fill="#fff" className="filter drop-shadow-[0_0_3px_#10b981]" />
+            <circle cx="150" cy="17" r="2.5" fill="#fff" className="filter drop-shadow-[0_0_3px_#10b981]" />
             <defs>
               <linearGradient id="greenGlow" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="#10b981" stopOpacity="0.15" />
@@ -272,55 +284,55 @@ export default function DashboardPage() {
         </StatCard>
       </div>
 
-      {/* Intermediate metrics row: Averages & Circular Progress rings */}
+      {/* Intermediate metrics row: Averages & Glowing Circular Progress Rings */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 z-10 relative">
         
         {/* AVERAGE PPI */}
         <div className="bg-white/5 border border-white/10 rounded-2xl p-5 flex items-center justify-between backdrop-blur-md hover:border-orange-500/20 transition-all duration-300">
           <div className="space-y-1">
-            <span className="text-[10px] text-zinc-500 uppercase font-black tracking-wider block">Average PPI</span>
+            <span className="text-[10px] text-zinc-550 uppercase font-black tracking-wider block">Average PPI</span>
             <span className="text-2xl font-black text-white">{data.avgPpi.toFixed(1)}</span>
             <span className="text-[10px] text-zinc-450 block font-semibold">{data.avgPpi > 0 ? `${data.avgPpi.toFixed(1)} avg` : "No data"}</span>
           </div>
           <ProgressRing value={data.avgPpi} colorClass="stroke-orange-500" trailColorClass="stroke-white/5">
-            <Activity className="w-4 h-4 text-orange-500" />
+            <Activity className="w-[18px] h-[18px] text-orange-500" />
           </ProgressRing>
         </div>
 
         {/* AVERAGE MPI */}
         <div className="bg-white/5 border border-white/10 rounded-2xl p-5 flex items-center justify-between backdrop-blur-md hover:border-emerald-500/20 transition-all duration-300">
           <div className="space-y-1">
-            <span className="text-[10px] text-zinc-500 uppercase font-black tracking-wider block">Average MPI</span>
+            <span className="text-[10px] text-zinc-550 uppercase font-black tracking-wider block">Average MPI</span>
             <span className="text-2xl font-black text-white">{data.avgMpi.toFixed(1)}</span>
             <span className="text-[10px] text-zinc-450 block font-semibold">{data.avgMpi > 0 ? `${data.avgMpi.toFixed(1)} avg` : "No data"}</span>
           </div>
           <ProgressRing value={data.avgMpi} colorClass="stroke-emerald-500" trailColorClass="stroke-white/5">
-            <TrendingUp className="w-4 h-4 text-emerald-500" />
+            <TrendingUp className="w-[18px] h-[18px] text-emerald-500" />
           </ProgressRing>
         </div>
 
         {/* AVERAGE CPI */}
         <div className="bg-white/5 border border-white/10 rounded-2xl p-5 flex items-center justify-between backdrop-blur-md hover:border-blue-500/20 transition-all duration-300">
           <div className="space-y-1">
-            <span className="text-[10px] text-zinc-500 uppercase font-black tracking-wider block">Average CPI</span>
+            <span className="text-[10px] text-zinc-550 uppercase font-black tracking-wider block">Average CPI</span>
             <span className="text-2xl font-black text-white">{data.avgCpi.toFixed(1)}</span>
             <span className="text-[10px] text-zinc-450 block font-semibold">Combined index</span>
           </div>
           <ProgressRing value={data.avgCpi} colorClass="stroke-blue-500" trailColorClass="stroke-white/5">
-            <Calendar className="w-4 h-4 text-blue-500" />
+            <Calendar className="w-[18px] h-[18px] text-blue-500" />
           </ProgressRing>
         </div>
 
         {/* PERFORMANCE STATUS */}
         <div className="bg-white/5 border border-white/10 rounded-2xl p-5 flex items-center justify-between backdrop-blur-md hover:border-amber-500/20 transition-all duration-300">
           <div className="space-y-1">
-            <span className="text-[10px] text-zinc-500 uppercase font-black tracking-wider block">Performance Status</span>
+            <span className="text-[10px] text-zinc-550 uppercase font-black tracking-wider block">Performance Status</span>
             <span className="text-xl font-black text-white">On Track</span>
             <span className="text-[10px] text-zinc-450 block font-semibold">Keep pushing hard!</span>
           </div>
           <ProgressRing value={8.5} max={10} colorClass="stroke-amber-500" trailColorClass="stroke-white/5">
-            <div className="w-7 h-7 bg-amber-500/10 rounded-full flex items-center justify-center border border-amber-500/20">
-              <Star className="w-3.5 h-3.5 text-amber-500 fill-current" />
+            <div className="w-8 h-8 bg-amber-500/10 rounded-full flex items-center justify-center border border-amber-500/20">
+              <Star className="w-4 h-4 text-amber-500 fill-current" />
             </div>
           </ProgressRing>
         </div>
@@ -333,7 +345,7 @@ export default function DashboardPage() {
             key={tab}
             onClick={() => setActiveTab(tab)}
             className={`flex-1 py-2 rounded-lg text-center transition-all uppercase tracking-wider text-[10px] ${
-              activeTab === tab ? "bg-orange-600 text-white shadow font-black" : "text-zinc-400 hover:text-zinc-200"
+              activeTab === tab ? "bg-orange-650 text-white shadow font-black" : "text-zinc-400 hover:text-zinc-200"
             }`}
           >
             {tab}
@@ -357,7 +369,7 @@ export default function DashboardPage() {
           <div className="h-[210px] sm:h-[260px] flex items-center justify-center">
             {data.cpiTrend.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={data.cpiTrend} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
+                <AreaChart data={data.cpiTrend} margin={{ top: 15, right: 10, left: -25, bottom: 0 }}>
                   <defs>
                     <linearGradient id="colorCpi" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.25}/>
@@ -384,7 +396,7 @@ export default function DashboardPage() {
                 </AreaChart>
               </ResponsiveContainer>
             ) : (
-              <div className="text-zinc-550 text-xs">No CPI trend scores recorded.</div>
+              <div className="text-zinc-555 text-xs">No CPI trend scores recorded.</div>
             )}
           </div>
         </div>
@@ -403,7 +415,7 @@ export default function DashboardPage() {
           <div className="h-[210px] sm:h-[260px] flex items-center justify-center">
             {data.teamPerformance.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={data.teamPerformance} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
+                <BarChart data={data.teamPerformance} margin={{ top: 15, right: 10, left: -25, bottom: 0 }}>
                   <defs>
                     <linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0%" stopColor="#3b82f6" />
@@ -417,11 +429,14 @@ export default function DashboardPage() {
                     itemStyle={{ color: '#c084fc', fontWeight: 'bold' }}
                     labelStyle={{ color: '#71717a' }}
                   />
-                  <Bar dataKey="cpi" name="CPI Score" fill="url(#barGrad)" radius={[6, 6, 0, 0]} maxBarSize={32} />
+                  <Bar dataKey="cpi" name="CPI Score" fill="url(#barGrad)" radius={[6, 6, 0, 0]} maxBarSize={32}>
+                    {/* Display score directly on top of the bars to match the mockup exactly */}
+                    <LabelList dataKey="cpi" position="top" fill="#a1a1aa" fontSize={10} fontWeight="bold" formatter={(val: number) => val.toFixed(1)} />
+                  </Bar>
                 </BarChart>
               </ResponsiveContainer>
             ) : (
-              <div className="text-zinc-550 text-xs">No team performance data available.</div>
+              <div className="text-zinc-555 text-xs">No team performance data available.</div>
             )}
           </div>
         </div>
@@ -443,7 +458,7 @@ export default function DashboardPage() {
           <div className="h-[210px] sm:h-[260px] flex items-center justify-center">
             {data.practiceTrend.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={data.practiceTrend} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
+                <AreaChart data={data.practiceTrend} margin={{ top: 15, right: 10, left: -25, bottom: 0 }}>
                   <defs>
                     <linearGradient id="colorPpi" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="#f97316" stopOpacity="0.25"/>
@@ -470,7 +485,7 @@ export default function DashboardPage() {
                 </AreaChart>
               </ResponsiveContainer>
             ) : (
-              <div className="text-zinc-550 text-xs">No practice sessions logged.</div>
+              <div className="text-zinc-555 text-xs">No practice sessions logged.</div>
             )}
           </div>
         </div>
@@ -489,7 +504,7 @@ export default function DashboardPage() {
           <div className="h-[210px] sm:h-[260px] flex items-center justify-center">
             {data.totalMatches > 0 && data.matchTrend.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={data.matchTrend} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
+                <AreaChart data={data.matchTrend} margin={{ top: 15, right: 10, left: -25, bottom: 0 }}>
                   <defs>
                     <linearGradient id="colorMpi" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="#10b981" stopOpacity="0.25"/>
@@ -592,8 +607,8 @@ export default function DashboardPage() {
   );
 }
 
-// Progress Ring Helper Component
-function ProgressRing({ value, max = 10, colorClass, trailColorClass, size = 48, strokeWidth = 4.5, children }: {
+// Progress Ring Helper Component with Glowing Blurred Underlays
+function ProgressRing({ value, max = 10, colorClass, trailColorClass, size = 52, strokeWidth = 5.5, children }: {
   value: number;
   max?: number;
   colorClass: string;
@@ -609,7 +624,8 @@ function ProgressRing({ value, max = 10, colorClass, trailColorClass, size = 48,
 
   return (
     <div className="relative flex items-center justify-center shrink-0" style={{ width: size, height: size }}>
-      <svg width={size} height={size} className="-rotate-90">
+      <svg width={size} height={size} className="-rotate-90 overflow-visible">
+        {/* Background track */}
         <circle
           className={trailColorClass}
           strokeWidth={strokeWidth}
@@ -618,6 +634,20 @@ function ProgressRing({ value, max = 10, colorClass, trailColorClass, size = 48,
           cx={size / 2}
           cy={size / 2}
         />
+        {/* Glowing blurry drop-shadow underlay circle */}
+        <circle
+          className={colorClass}
+          style={{ filter: "blur(2.5px)", opacity: 0.4 }}
+          strokeWidth={strokeWidth + 1}
+          strokeDasharray={circumference}
+          strokeDashoffset={strokeDashoffset}
+          strokeLinecap="round"
+          fill="transparent"
+          r={radius}
+          cx={size / 2}
+          cy={size / 2}
+        />
+        {/* Main sharp progress circle */}
         <circle
           className={clsx("transition-all duration-700 ease-out", colorClass)}
           strokeWidth={strokeWidth}
