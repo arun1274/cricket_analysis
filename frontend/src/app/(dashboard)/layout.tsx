@@ -18,7 +18,7 @@ export default function DashboardLayout({
   const [status, setStatus] = useState<"APPROVED" | "PENDING" | "REJECTED" | null>(null);
   const [orgName, setOrgName] = useState("");
   const [role, setRole] = useState<string | null>(null);
-  const [theme, setTheme] = useState<"light" | "dark">("dark");
+  const [theme, setTheme] = useState<"light" | "dark">("light");
 
   useEffect(() => {
     const storedTheme = localStorage.getItem("theme") as "light" | "dark";
@@ -30,8 +30,8 @@ export default function DashboardLayout({
         document.documentElement.classList.remove("light");
       }
     } else {
-      setTheme("dark");
-      document.documentElement.classList.remove("light");
+      setTheme("light");
+      document.documentElement.classList.add("light");
     }
   }, []);
 

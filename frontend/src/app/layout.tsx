@@ -34,7 +34,8 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `
               try {
-                if (localStorage.getItem('theme') === 'light') {
+                var t = localStorage.getItem('theme');
+                if (t === 'light' || !t) {
                   document.documentElement.classList.add('light');
                 } else {
                   document.documentElement.classList.remove('light');
