@@ -460,7 +460,7 @@ export default function DashboardPage() {
                   />
                   <Bar dataKey="cpi" name="CPI Score" fill="url(#barGrad)" radius={[6, 6, 0, 0]} maxBarSize={32}>
                     {/* Display score directly on top of the bars to match the mockup exactly */}
-                    <LabelList dataKey="cpi" position="top" fill="#a1a1aa" fontSize={10} fontWeight="bold" formatter={(val: number) => val.toFixed(1)} />
+                    <LabelList dataKey="cpi" position="top" fill="#a1a1aa" fontSize={10} fontWeight="bold" formatter={(val: any) => typeof val === 'number' ? val.toFixed(1) : Number(val).toFixed(1)} />
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
