@@ -27,8 +27,8 @@ export default function Home() {
             <Link href="/login" className="text-xs font-semibold text-zinc-400 hover:text-white transition-colors">
               Log in
             </Link>
-            <Link 
-              href="/signup" 
+            <Link
+              href="/signup"
               className="h-9 px-4 rounded-xl text-xs font-bold bg-white hover:opacity-90 text-black inline-flex items-center justify-center transition-all cursor-pointer shadow-md"
             >
               Get Started
@@ -56,7 +56,7 @@ export default function Home() {
             Platform v2.0 Live
           </motion.div>
 
-          <motion.h1 
+          <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
@@ -69,24 +69,24 @@ export default function Home() {
             </span>
           </motion.h1>
 
-          <motion.p 
+          <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
             className="text-lg md:text-xl text-zinc-400 max-w-2xl mx-auto mb-10 font-normal leading-relaxed"
           >
-            Are we training properly? If not, what must we do better? 
+            Are we training properly? If not, what must we do better?
             The premier analytics platform designed for elite cricket coaches.
           </motion.p>
 
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
-            <Link 
-              href="/signup" 
+            <Link
+              href="/signup"
               className="h-12 px-6 rounded-xl text-sm font-bold bg-orange-600 hover:bg-orange-500 text-zinc-50 inline-flex items-center justify-center gap-2 transition-all hover:scale-[1.02] shadow-lg shadow-orange-600/15 cursor-pointer"
             >
               Start Coaching Now
@@ -100,17 +100,17 @@ export default function Home() {
       <section className="py-20 px-6 border-t border-zinc-900 relative z-10">
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-3 gap-6">
-            <FeatureCard 
+            <FeatureCard
               icon={<Activity />}
               title="Practice & Match Index"
               description="Slider-based assessment for PPI and MPI to accurately track player progression and form."
             />
-            <FeatureCard 
+            <FeatureCard
               icon={<BarChart3 />}
               title="Advanced Analytics"
               description="Radar charts, team comparisons, and trend analysis visualised with stunning clarity."
             />
-            <FeatureCard 
+            <FeatureCard
               icon={<Shield />}
               title="Smart Insights"
               description="AI-driven strengths, weaknesses, and targeted recommendations for every individual."
