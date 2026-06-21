@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { api } from "@/lib/api";
-import { Home, Users, Clock, User, LogOut, Loader2 } from "lucide-react";
+import { Home, Users, Clock, User, LogOut, Loader2, Sun, Moon } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -18,6 +18,33 @@ export default function DashboardLayout({
   const [status, setStatus] = useState<"APPROVED" | "PENDING" | "REJECTED" | null>(null);
   const [orgName, setOrgName] = useState("");
   const [role, setRole] = useState<string | null>(null);
+  const [theme, setTheme] = useState<"light" | "dark">("dark");
+
+  useEffect(() => {
+    const storedTheme = localStorage.getItem("theme") as "light" | "dark";
+    if (storedTheme) {
+      setTheme(storedTheme);
+      if (storedTheme === "light") {
+        document.documentElement.classList.add("light");
+      } else {
+        document.documentElement.classList.remove("light");
+      }
+    } else {
+      setTheme("dark");
+      document.documentElement.classList.remove("light");
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    const nextTheme = theme === "light" ? "dark" : "light";
+    setTheme(nextTheme);
+    localStorage.setItem("theme", nextTheme);
+    if (nextTheme === "light") {
+      document.documentElement.classList.add("light");
+    } else {
+      document.documentElement.classList.remove("light");
+    }
+  };
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -122,13 +149,22 @@ export default function DashboardLayout({
           </div>
           <span className="text-lg font-black tracking-tight text-white">CPI</span>
         </div>
-        <button
-          onClick={handleLogout}
-          className="text-zinc-400 hover:text-red-500 transition-colors p-2 rounded-lg"
-          title="Log Out"
-        >
-          <LogOut className="w-5 h-5" />
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={toggleTheme}
+            className="text-zinc-400 hover:text-orange-500 transition-colors p-2 rounded-lg cursor-pointer"
+            title={theme === "light" ? "Switch to Dark Mode" : "Switch to Light Mode"}
+          >
+            {theme === "light" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+          </button>
+          <button
+            onClick={handleLogout}
+            className="text-zinc-400 hover:text-red-500 transition-colors p-2 rounded-lg cursor-pointer"
+            title="Log Out"
+          >
+            <LogOut className="w-5 h-5" />
+          </button>
+        </div>
       </header>
 
       {/* Main Content Container */}

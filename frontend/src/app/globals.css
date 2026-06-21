@@ -1,16 +1,49 @@
 @import "tailwindcss";
 
+:root {
+  --bg-primary: #000000;
+  --bg-secondary: #09090b;
+  --bg-tertiary: #18181b;
+  --border-color: #18181b;
+  --border-color-light: #27272a;
+  --text-primary: #ffffff;
+  --text-secondary: #a1a1aa;
+  --text-tertiary: #71717a;
+}
+
+html.light {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f4f4f5;
+  --bg-tertiary: #e4e4e7;
+  --border-color: #e4e4e7;
+  --border-color-light: #d4d4d8;
+  --text-primary: #09090b;
+  --text-secondary: #52525b;
+  --text-tertiary: #71717a;
+}
+
 @theme {
   --color-orange-500: #f97316;
   --color-orange-600: #ea580c;
-  --color-background: #0a0a0a;
-  --color-foreground: #ededed;
+  
+  --color-black: var(--bg-primary);
+  --color-zinc-950: var(--bg-secondary);
+  --color-zinc-900: var(--bg-tertiary);
+  --color-zinc-800: var(--border-color-light);
+  --color-white: var(--text-primary);
+  --color-zinc-400: var(--text-secondary);
+  --color-zinc-500: var(--text-tertiary);
 }
 
 @layer base {
   body {
-    background-color: var(--color-background);
-    color: var(--color-foreground);
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
     font-family: Arial, Helvetica, sans-serif;
+  }
+  
+  /* Global smooth transition for elements */
+  html, body, header, main, nav, div, button, input, select, textarea, span, p, h1, h2, h3, h4, h5, h6, svg, path {
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, fill 0.3s ease, stroke 0.3s ease;
   }
 }
