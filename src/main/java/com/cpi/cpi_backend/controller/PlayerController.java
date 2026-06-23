@@ -40,23 +40,38 @@ public class PlayerController {
     }
 
     @GetMapping
+    @Transactional
     public ResponseEntity<List<Player>> getMyPlayers(@AuthenticationPrincipal Coach currentCoach) {
         Coach managedCoach = coachRepository.findById(currentCoach.getId())
                 .orElseThrow(() -> new RuntimeException("Coach not found"));
 
+        List<Player> allPlayers;
         if (managedCoach.getRole() == Role.ADMIN) {
-            return ResponseEntity.ok(playerRepository.findAll());
+            allPlayers = new ArrayList<>(playerRepository.findAll());
+        } else {
+            allPlayers = new ArrayList<>(playerRepository.findByCreatorCoachId(managedCoach.getId()));
+            
+            // Also check if there's a player record with their name
+            boolean hasSelf = allPlayers.stream().anyMatch(p -> p.getName() != null && p.getName().equalsIgnoreCase(managedCoach.getName()));
+            if (!hasSelf) {
+                playerRepository.findAll().stream()
+                        .filter(p -> p.getName() != null && p.getName().equalsIgnoreCase(managedCoach.getName()))
+                        .findFirst()
+                        .ifPresent(allPlayers::add);
+            }
         }
 
-        List<Player> allPlayers = new ArrayList<>(playerRepository.findByCreatorCoachId(managedCoach.getId()));
-        
-        // Also check if there's a player record with their name
-        boolean hasSelf = allPlayers.stream().anyMatch(p -> p.getName() != null && p.getName().equalsIgnoreCase(managedCoach.getName()));
-        if (!hasSelf) {
-            playerRepository.findAll().stream()
-                    .filter(p -> p.getName() != null && p.getName().equalsIgnoreCase(managedCoach.getName()))
-                    .findFirst()
-                    .ifPresent(allPlayers::add);
+        // Generate invitation codes for any players missing one
+        for (Player p : allPlayers) {
+            if (p.getInvitationCode() == null || p.getInvitationCode().trim().isEmpty()) {
+                String code;
+                do {
+                    code = generateInvitationCode();
+                } while (playerRepository.findByInvitationCode(code).isPresent());
+                p.setInvitationCode(code);
+                p.setInvitationCodeActivated(false);
+                playerRepository.save(p);
+            }
         }
 
         return ResponseEntity.ok(allPlayers);
