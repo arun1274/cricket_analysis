@@ -16,12 +16,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<Map<String, Object>> handleRuntimeException(RuntimeException ex) {
         log.error("Runtime exception occurred: ", ex);
-        HttpStatus status = "Unauthorized".equals(ex.getMessage())
+        String message = ex.getMessage();
+        HttpStatus status = "Unauthorized".equals(message)
                 ? HttpStatus.FORBIDDEN
                 : HttpStatus.BAD_REQUEST;
 
         return ResponseEntity.status(status).body(Map.of(
-                "message", ex.getMessage(),
+                "message", message != null ? message : "A database or system runtime error occurred.",
                 "timestamp", LocalDateTime.now().toString(),
                 "status", status.value()
         ));
