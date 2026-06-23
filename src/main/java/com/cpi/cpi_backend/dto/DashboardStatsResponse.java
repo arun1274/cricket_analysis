@@ -21,6 +21,16 @@ public class DashboardStatsResponse {
     private double avgMpi;
     private double avgCpi;
 
+    // Redesigned dashboard metrics
+    private long playersAssessedToday;
+    private long practicesToday;
+    private long matchesToday;
+
+    private List<RecentAssessmentDto> recentAssessments;
+    private List<PlayerPerformanceDto> playersNeedingAttention;
+    private List<PlayerPerformanceDto> topPerformers;
+    private List<String> coachInsights;
+
     private List<TeamPerformanceDto> teamPerformance;
     private List<TrendDto> cpiTrend;
     private List<TrendDto> practiceTrend;
@@ -50,9 +60,30 @@ public class DashboardStatsResponse {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class ActivityDto {
-        private String type; // PLAYER_ADDED, TEAM_CREATED, PRACTICE_COMPLETED, MATCH_RECORDED
+        private String type;
         private String title;
         private String description;
         private LocalDateTime timestamp;
+    }
+
+    @Data
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class RecentAssessmentDto {
+        private String playerName;
+        private String assessmentType; // PRACTICE or MATCH
+        private double score;
+        private LocalDateTime date;
+    }
+
+    @Data
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class PlayerPerformanceDto {
+        private String name;
+        private double cpi;
+        private String role;
     }
 }

@@ -285,6 +285,13 @@ export default function PlayersPage() {
     setSelectedPlayer(player);
     setView("profile");
     loadHistory(player.id);
+    
+    const action = searchParams.get("action");
+    if (action === "practice") {
+      setShowPracticeOverlay(true);
+    } else if (action === "match") {
+      setShowMatchOverlay(true);
+    }
   };
 
   const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>, isProfileUpdate = false) => {

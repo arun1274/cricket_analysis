@@ -189,6 +189,122 @@ public class DashboardController {
                 .limit(10)
                 .collect(Collectors.toList());
 
+        // Redesigned dashboard metrics: Today's Snapshot
+        java.time.LocalDate today = java.time.LocalDate.now();
+
+        long practicesToday = practiceAssessments.stream()
+                .filter(pa -> pa.getDate() != null && pa.getDate().equals(today))
+                .count();
+
+        long matchesToday = matchAssessments.stream()
+                .filter(ma -> ma.getDate() != null && ma.getDate().equals(today))
+                .count();
+
+        java.util.Set<Long> playersAssessedTodayIds = new java.util.HashSet<>();
+        practiceAssessments.stream()
+                .filter(pa -> pa.getDate() != null && pa.getDate().equals(today))
+                .map(pa -> pa.getPlayer().getId())
+                .forEach(playersAssessedTodayIds::add);
+        matchAssessments.stream()
+                .filter(ma -> ma.getDate() != null && ma.getDate().equals(today))
+                .map(ma -> ma.getPlayer().getId())
+                .forEach(playersAssessedTodayIds::add);
+        long playersAssessedToday = playersAssessedTodayIds.size();
+
+        // Recent Assessments
+        List<DashboardStatsResponse.RecentAssessmentDto> recentAssessments = new ArrayList<>();
+        for (PracticeAssessment pa : practiceAssessments) {
+            recentAssessments.add(DashboardStatsResponse.RecentAssessmentDto.builder()
+                    .playerName(pa.getPlayer().getName())
+                    .assessmentType("PRACTICE")
+                    .score(pa.getPpiScore())
+                    .date(pa.getCreatedAt())
+                    .build());
+        }
+        for (MatchAssessment ma : matchAssessments) {
+            recentAssessments.add(DashboardStatsResponse.RecentAssessmentDto.builder()
+                    .playerName(ma.getPlayer().getName())
+                    .assessmentType("MATCH")
+                    .score(ma.getMpiScore())
+                    .date(ma.getCreatedAt())
+                    .build());
+        }
+        recentAssessments.sort((a, b) -> {
+            if (a.getDate() == null && b.getDate() == null) return 0;
+            if (a.getDate() == null) return 1;
+            if (b.getDate() == null) return -1;
+            return b.getDate().compareTo(a.getDate());
+        });
+        if (recentAssessments.size() > 5) {
+            recentAssessments = recentAssessments.subList(0, 5);
+        }
+
+        // Players Needing Attention & Top Performers
+        List<DashboardStatsResponse.PlayerPerformanceDto> playerPerformances = players.stream()
+                .map(p -> {
+                    double ppi = p.getPpiScore() != null ? p.getPpiScore() : 0.0;
+                    double mpi = p.getMpiScore() != null ? p.getMpiScore() : 0.0;
+                    double cpiVal = 0.0;
+                    if (ppi > 0 && mpi > 0) {
+                        cpiVal = (ppi + mpi) / 2.0;
+                    } else if (ppi > 0) {
+                        cpiVal = ppi;
+                    } else if (mpi > 0) {
+                        cpiVal = mpi;
+                    }
+                    return DashboardStatsResponse.PlayerPerformanceDto.builder()
+                            .name(p.getName())
+                            .cpi(cpiVal)
+                            .role(p.getRole() != null ? p.getRole() : "Player")
+                            .build();
+                })
+                .collect(Collectors.toList());
+
+        List<DashboardStatsResponse.PlayerPerformanceDto> playersNeedingAttention = new ArrayList<>(playerPerformances);
+        playersNeedingAttention.sort(Comparator.comparingDouble(DashboardStatsResponse.PlayerPerformanceDto::getCpi));
+        if (playersNeedingAttention.size() > 5) {
+            playersNeedingAttention = playersNeedingAttention.subList(0, 5);
+        }
+
+        List<DashboardStatsResponse.PlayerPerformanceDto> topPerformers = playerPerformances.stream()
+                .filter(p -> p.getCpi() > 0)
+                .sorted((a, b) -> Double.compare(b.getCpi(), a.getCpi()))
+                .collect(Collectors.toList());
+        if (topPerformers.size() > 5) {
+            topPerformers = topPerformers.subList(0, 5);
+        }
+
+        // Coach Insights generator
+        List<String> coachInsights = new ArrayList<>();
+        if (avgCpi > 0) {
+            if (avgPpi > avgMpi + 0.5) {
+                coachInsights.add("Practice consistency is strong, but match execution under pressure needs focus.");
+                coachInsights.add("Simulate match pressures (run-chase targets, wicket constraints) during net sessions.");
+            } else if (avgMpi > avgPpi + 0.5) {
+                coachInsights.add("Match execution is high. Maintain discipline during structured practice drills.");
+                coachInsights.add("Log practice session intentions to align nets with match scenarios.");
+            } else {
+                coachInsights.add("Overall skills are well-balanced between practice and match assessments.");
+                coachInsights.add("Keep up current training routines; focus on tactical field placement awareness.");
+            }
+        } else {
+            coachInsights.add("No assessment data logged yet. Complete a Practice or Match Assessment to generate insights.");
+        }
+
+        if (practicesToday > 0) {
+            coachInsights.add("Completed " + practicesToday + " practice assessments today. Nice consistency!");
+        }
+        if (matchesToday > 0) {
+            coachInsights.add("Analyzed " + matchesToday + " match assessments today. Good work reviewing match play!");
+        }
+        if (playersNeedingAttention.stream().anyMatch(p -> p.getCpi() == 0)) {
+            coachInsights.add("Some players have not been assessed yet. Prioritize logging their initial scores.");
+        }
+
+        if (coachInsights.size() > 4) {
+            coachInsights = coachInsights.subList(0, 4);
+        }
+
         DashboardStatsResponse response = DashboardStatsResponse.builder()
                 .totalTeams(0L)
                 .totalPlayers(totalPlayers)
@@ -197,6 +313,13 @@ public class DashboardController {
                 .avgPpi(avgPpi)
                 .avgMpi(avgMpi)
                 .avgCpi(avgCpi)
+                .playersAssessedToday(playersAssessedToday)
+                .practicesToday(practicesToday)
+                .matchesToday(matchesToday)
+                .recentAssessments(recentAssessments)
+                .playersNeedingAttention(playersNeedingAttention)
+                .topPerformers(topPerformers)
+                .coachInsights(coachInsights)
                 .teamPerformance(List.of())
                 .cpiTrend(cpiTrend)
                 .practiceTrend(practiceTrend)
