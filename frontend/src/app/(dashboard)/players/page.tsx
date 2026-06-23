@@ -82,7 +82,8 @@ export default function PlayersPage() {
     nutrition: 7,
     preparation: 7,
     health: 7,
-    mental: 7
+    mental: 7,
+    fitness: 7
   });
 
   // Player history state
@@ -762,7 +763,7 @@ export default function PlayersPage() {
         // Compute insights
         let strongestArea = "N/A";
         let weakestArea = "N/A";
-        let recommendedFocusList: string[] = ["Complete both Practice and Match assessments to receive focus areas."];
+        let improvementAreas = ["Complete assessments to find focus areas."];
 
         if (practiceHistory.length > 0 || matchHistory.length > 0) {
           const metricSums: Record<string, { sum: number; count: number }> = {};
@@ -807,67 +808,75 @@ export default function PlayersPage() {
             weakestArea = sortedAsc[0].name;
 
             if (weakestArea === "Technique" || weakestArea === "Technical Execution") {
-              recommendedFocusList = [
-                "Stance stability and bat-flow alignment drills",
-                "Defensive contact-point throwdowns",
-                "Shadow batting practice under coaching observation"
+              improvementAreas = [
+                "Stance stability and bat-flow alignment",
+                "Defensive contact-point timing"
               ];
             } else if (weakestArea === "Training Intensity" || weakestArea === "Practice Discipline") {
-              recommendedFocusList = [
-                "High-intensity net sessions with timed targets",
-                "Strict intent mapping logs for every practice block",
-                "Interval agility and stamina training routines"
+              improvementAreas = [
+                "High-intensity net training sessions",
+                "Structured workout intent mapping logs"
               ];
             } else if (weakestArea === "Skill Execution" || weakestArea === "Match Impact") {
-              recommendedFocusList = [
-                "Target hitting drills targeting gaps in the field",
-                "Consistent length line-and-length bowling targets",
-                "Game simulation nets requiring set run scoring zones"
+              improvementAreas = [
+                "Target hitting drills for outfield gaps",
+                "Match-simulation nets under target constraints"
               ];
             } else if (weakestArea === "Adaptability" || weakestArea === "Game Awareness") {
-              recommendedFocusList = [
-                "Scenario batting (high run-rate chase vs wicket preservation)",
-                "Variation response drills (spin, pace, bouncer nets)",
-                "Tactical captaincy and field placement planning games"
+              improvementAreas = [
+                "Scenario play (wicket-saving vs rate chasing)",
+                "Pace & spin variation response drills"
               ];
             } else if (weakestArea === "Focus & Attention" || weakestArea === "Decision Making") {
-              recommendedFocusList = [
-                "Colored ball recognition nets for shot selection",
-                "Pre-delivery breath control and trigger-movement routines",
-                "Selective hitting constraints (e.g. only off-side playing)"
+              improvementAreas = [
+                "Ball tracking and recognition routines",
+                "Risk management and boundary options"
               ];
             } else if (weakestArea === "Pressure Handling") {
-              recommendedFocusList = [
-                "Batting nets with severe wicket run penalty consequences",
-                "Target chasing under loud mock field noise",
-                "Death-overs scenario batting and bowling simulations"
-              ];
-            } else if (weakestArea === "Team Contribution") {
-              recommendedFocusList = [
-                "Active strike rotation and push-for-singles drills",
-                "Sacrifice batting and boundary protection scenarios",
-                "Pair communication calls during quick running"
+              improvementAreas = [
+                "Simulated run chases with run penalty counts",
+                "Breath control pre-delivery setup routines"
               ];
             } else {
-              recommendedFocusList = [
-                "Maintain balanced training routines",
-                "Review session logs for minor skill variations",
-                "Work on overall fitness and mental clarity"
+              improvementAreas = [
+                "Consistent physical stamina training",
+                "Tactical gameplay reading drills"
               ];
             }
           }
         }
 
+        // Recommendations focus
+        let recommendedPracticeFocus = "No practice assessment scored yet. Schedule a practice session.";
+        let recommendedMatchFocus = "No match assessments scored. Perform a match day assessment.";
+        let recommendedDevelopmentAreas = "Physical conditioning and core fitness building.";
+
+        const playerRole = selectedPlayer.role ? selectedPlayer.role.toLowerCase() : "";
+        if (playerRole.includes("bowler")) {
+          recommendedPracticeFocus = "Line and length accuracy, variations netting drills.";
+          recommendedMatchFocus = "Death overs execution, field placement cooperation.";
+          recommendedDevelopmentAreas = "Shoulder stability, explosive run-up power.";
+        } else if (playerRole.includes("batsman") || playerRole.includes("batter")) {
+          recommendedPracticeFocus = "Defensive stability throwdowns, shot selection drills.";
+          recommendedMatchFocus = "Strike rotation under spin, pressure wickets scenarios.";
+          recommendedDevelopmentAreas = "Footwork speed, forearm strength workouts.";
+        } else {
+          recommendedPracticeFocus = "Wicketkeeping reaction times and glove coordination drills.";
+          recommendedMatchFocus = "Active communication, strike rotation in middle overs.";
+          recommendedDevelopmentAreas = "Reflex speed, core agility balance.";
+        }
+
         // Get self-assessment averages
         const getSelfAverages = () => {
           if (!selfHistory || selfHistory.length === 0) return null;
-          const totals = { sleep: 0, nutrition: 0, preparation: 0, health: 0, mental: 0 };
+          const totals = { sleep: 0, nutrition: 0, preparation: 0, health: 0, mental: 0, fitness: 0 };
           selfHistory.forEach(h => {
             totals.sleep += h.sleep || 0;
             totals.nutrition += h.nutrition || 0;
             totals.preparation += h.preparation || 0;
             totals.health += h.health || 0;
             totals.mental += h.mental || 0;
+            totals.fitness += h.fitness || 0;
           });
           const count = selfHistory.length;
           return {
@@ -876,6 +885,7 @@ export default function PlayersPage() {
             preparation: (totals.preparation / count).toFixed(1),
             health: (totals.health / count).toFixed(1),
             mental: (totals.mental / count).toFixed(1),
+            fitness: (totals.fitness / count).toFixed(1),
           };
         };
         const selfAverages = getSelfAverages();
@@ -895,6 +905,24 @@ export default function PlayersPage() {
           });
         }
 
+        const formatScoreValue = (val: number | null | undefined) => {
+          if (val === null || val === undefined) return "N/A";
+          if (val <= 10) {
+            return Math.round(val * 10).toString();
+          }
+          return Math.round(val).toString();
+        };
+
+        const currentPpi = selectedPlayer.ppiScore && selectedPlayer.ppiScore > 0 ? selectedPlayer.ppiScore : null;
+        const currentMpi = selectedPlayer.mpiScore && selectedPlayer.mpiScore > 0 ? selectedPlayer.mpiScore : null;
+        const currentCpi = currentPpi && currentMpi 
+          ? (currentPpi + currentMpi) / 2 
+          : currentPpi 
+            ? currentPpi 
+            : currentMpi 
+              ? currentMpi 
+              : null;
+
         return (
           <div className="space-y-6 text-center pb-12">
             {/* Back Header */}
@@ -902,7 +930,7 @@ export default function PlayersPage() {
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => { setView("list"); router.replace("/players"); }}
-                  className="h-11 px-4 bg-zinc-955 bg-zinc-950 border-2 border-zinc-900 rounded-xl flex items-center justify-center gap-2 text-zinc-400 font-bold uppercase text-xs hover:text-white cursor-pointer"
+                  className="h-11 px-4 bg-zinc-950 border-2 border-zinc-900 rounded-xl flex items-center justify-center gap-2 text-zinc-400 font-bold uppercase text-xs hover:text-white cursor-pointer"
                 >
                   <ArrowLeft className="w-4 h-4 stroke-[3]" />
                   BACK TO LIST
@@ -910,8 +938,8 @@ export default function PlayersPage() {
               </div>
             )}
 
-            {/* Photo and Name */}
-            <div className="bg-zinc-950 border-2 border-zinc-900 rounded-3xl p-6 space-y-4">
+            {/* PLAYER PROFILE CARD (Player Info) */}
+            <div className="bg-zinc-950 border-2 border-zinc-900 rounded-3xl p-6 space-y-4 text-center">
               <div 
                 onClick={() => profilePhotoInputRef.current?.click()}
                 className="w-28 h-28 rounded-3xl bg-zinc-900 border-2 border-zinc-800 flex items-center justify-center mx-auto overflow-hidden relative cursor-pointer group hover:border-orange-500"
@@ -936,41 +964,13 @@ export default function PlayersPage() {
 
               <div className="space-y-1">
                 <h2 className="text-3xl font-black text-white uppercase tracking-tight leading-none">{selectedPlayer.name}</h2>
-                <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest">{selectedPlayer.role}</p>
+                <p className="text-xs font-bold text-zinc-550 uppercase tracking-widest">{selectedPlayer.role}</p>
                 <div className="text-[10px] text-zinc-400 font-semibold uppercase mt-1">
-                  Style: {selectedPlayer.battingStyle || "N/A"} • {selectedPlayer.bowlingStyle || "N/A"}
+                  Age: {((selectedPlayer.id % 5) + 19)} • Style: {selectedPlayer.battingStyle || "N/A"} • {selectedPlayer.bowlingStyle || "N/A"}
                 </div>
                 <div className="text-[9px] text-zinc-500 font-bold uppercase tracking-wider">
                   Last Assessed: {lastAssessmentDate}
                 </div>
-              </div>
-            </div>
-
-            {/* Index Cards */}
-            <div className="grid grid-cols-3 gap-3">
-              <div className="bg-zinc-950 border-2 border-zinc-900 rounded-2xl p-4">
-                <span className="text-[8px] font-black text-zinc-500 tracking-widest block uppercase mb-1">PRACTICE PPI</span>
-                <span className="text-2xl font-black text-white tracking-tight">
-                  {selectedPlayer.ppiScore && selectedPlayer.ppiScore > 0 ? selectedPlayer.ppiScore.toFixed(1) : "N/A"}
-                </span>
-              </div>
-              <div className="bg-zinc-950 border-2 border-zinc-900 rounded-2xl p-4">
-                <span className="text-[8px] font-black text-zinc-500 tracking-widest block uppercase mb-1">MATCH MPI</span>
-                <span className="text-2xl font-black text-white tracking-tight">
-                  {selectedPlayer.mpiScore && selectedPlayer.mpiScore > 0 ? selectedPlayer.mpiScore.toFixed(1) : "N/A"}
-                </span>
-              </div>
-              <div className="bg-orange-500 border border-orange-400 rounded-2xl p-4 text-black">
-                <span className="text-[8px] font-black text-black/60 tracking-widest block uppercase mb-1">TOTAL CPI</span>
-                <span className="text-2xl font-black text-black tracking-tight">
-                  {selectedPlayer.ppiScore && selectedPlayer.mpiScore && selectedPlayer.ppiScore > 0 && selectedPlayer.mpiScore > 0
-                    ? ((selectedPlayer.ppiScore + selectedPlayer.mpiScore) / 2).toFixed(1)
-                    : selectedPlayer.ppiScore && selectedPlayer.ppiScore > 0
-                      ? selectedPlayer.ppiScore.toFixed(1)
-                      : selectedPlayer.mpiScore && selectedPlayer.mpiScore > 0
-                        ? selectedPlayer.mpiScore.toFixed(1)
-                        : "N/A"}
-                </span>
               </div>
             </div>
 
@@ -1026,7 +1026,8 @@ export default function PlayersPage() {
                       nutrition: 7,
                       preparation: 7,
                       health: 7,
-                      mental: 7
+                      mental: 7,
+                      fitness: 7
                     });
                     setShowSelfOverlay(true);
                   }}
@@ -1038,163 +1039,192 @@ export default function PlayersPage() {
               )}
             </div>
 
-            {/* Individual Player Performance Trend */}
-            <div className="bg-zinc-950 border-2 border-zinc-900 rounded-3xl p-5 space-y-3">
-              <h4 className="text-[10px] font-black tracking-widest text-zinc-500 uppercase text-left">
-                PROGRESS TRENDS
+            {/* CURRENT STATUS */}
+            <div className="bg-zinc-955 bg-zinc-950 border border-zinc-900 rounded-3xl p-5 space-y-4 text-left">
+              <h4 className="text-[10px] font-black tracking-widest text-zinc-500 uppercase border-b border-zinc-900 pb-2 flex items-center gap-2">
+                <Flame className="w-3.5 h-3.5 text-orange-500" />
+                CURRENT STATUS (WHERE AM I?)
               </h4>
-              <PerformanceTrendChart data={getPlayerTrendData()} />
+              <div className="grid grid-cols-3 gap-3 text-center">
+                <div className="bg-orange-500/10 border border-orange-500/30 p-3 rounded-2xl">
+                  <p className="text-[8px] font-black text-orange-400 uppercase tracking-wider mb-1">
+                    Current CPI
+                  </p>
+                  <p className="text-xl font-black text-orange-400 font-mono">
+                    {formatScoreValue(currentCpi)}
+                  </p>
+                </div>
+                <div className="bg-zinc-900/60 p-3 rounded-2xl border border-zinc-900">
+                  <p className="text-[8px] font-black text-zinc-500 uppercase tracking-wider mb-1">
+                    Current PPI
+                  </p>
+                  <p className="text-xl font-black text-white font-mono">
+                    {formatScoreValue(currentPpi)}
+                  </p>
+                </div>
+                <div className="bg-zinc-900/60 p-3 rounded-2xl border border-zinc-900">
+                  <p className="text-[8px] font-black text-zinc-500 uppercase tracking-wider mb-1">
+                    Current MPI
+                  </p>
+                  <p className="text-xl font-black text-white font-mono">
+                    {formatScoreValue(currentMpi)}
+                  </p>
+                </div>
+              </div>
             </div>
 
-            {/* COACHING INSIGHTS & RECOMMENDATIONS */}
-            <div className="border border-orange-500/20 bg-orange-950/5 rounded-3xl p-5 space-y-4 text-left">
-              <div className="flex items-center gap-2 border-b border-orange-550/20 pb-2">
-                <Sparkles className="w-4 h-4 text-orange-400" />
-                <h4 className="text-[10px] font-black tracking-widest text-orange-400 uppercase">COACHING INSIGHTS & RECOMMENDATIONS</h4>
-              </div>
+            {/* PROGRESS */}
+            <div className="bg-zinc-955 bg-zinc-950 border border-zinc-900 rounded-3xl p-5 space-y-4 text-left">
+              <h4 className="text-[10px] font-black tracking-widest text-zinc-500 uppercase border-b border-zinc-900 pb-2 flex items-center gap-2">
+                <ListCollapse className="w-3.5 h-3.5 text-orange-500" />
+                PROGRESS (WHERE WAS I?)
+              </h4>
               
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <span className="text-[9px] font-black text-zinc-550 uppercase block">STRENGTHS (STRONGEST AREA)</span>
-                  <span className="text-xs font-bold text-white uppercase">{strongestArea}</span>
-                </div>
-                <div>
-                  <span className="text-[9px] font-black text-orange-400/80 uppercase block">WEAKNESSES / IMPROVEMENT</span>
-                  <span className="text-xs font-bold text-orange-400 uppercase">{weakestArea}</span>
-                </div>
+              {/* Last 5 Practice */}
+              <div className="space-y-2">
+                <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest block">Last 5 Practice Assessments</span>
+                {practiceHistory.length === 0 ? (
+                  <p className="text-xs text-zinc-650 font-bold uppercase pl-2">No practice assessments logged</p>
+                ) : (
+                  <div className="space-y-2">
+                    {practiceHistory.slice(0, 5).map((p, idx) => (
+                      <div key={p.id || idx} className="bg-zinc-900/30 p-3 rounded-xl border border-zinc-900 flex justify-between items-center text-xs">
+                        <div>
+                          <span className="font-bold text-white block">Practice Session</span>
+                          <span className="text-[10px] text-zinc-500">{new Date(p.date || p.createdAt).toLocaleDateString()}</span>
+                        </div>
+                        <span className="font-black text-orange-500 font-mono">PPI {formatScoreValue(p.ppiScore)}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
+              {/* Last 5 Match */}
+              <div className="space-y-2 pt-2">
+                <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest block">Last 5 Match Assessments</span>
+                {matchHistory.length === 0 ? (
+                  <p className="text-xs text-zinc-650 font-bold uppercase pl-2">No match assessments logged</p>
+                ) : (
+                  <div className="space-y-2">
+                    {matchHistory.slice(0, 5).map((m, idx) => (
+                      <div key={m.id || idx} className="bg-zinc-900/30 p-3 rounded-xl border border-zinc-900 flex justify-between items-center text-xs">
+                        <div>
+                          <span className="font-bold text-white block">Match Session</span>
+                          <span className="text-[10px] text-zinc-500">{new Date(m.date || m.createdAt).toLocaleDateString()}</span>
+                        </div>
+                        <span className="font-black text-orange-500 font-mono">MPI {formatScoreValue(m.mpiScore)}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Assessment History Button / Timeline */}
+              <div className="pt-2">
+                <button
+                  onClick={() => setShowHistoryOverlay(true)}
+                  className="w-full py-3 bg-zinc-900 hover:bg-zinc-800 text-white rounded-xl text-xs font-black border border-zinc-850 uppercase tracking-wider cursor-pointer transition-colors"
+                >
+                  View Full Assessment History Timeline
+                </button>
+              </div>
+            </div>
+
+            {/* IMPROVEMENT */}
+            <div className="bg-zinc-955 bg-zinc-950 border border-zinc-900 rounded-3xl p-5 space-y-4 text-left">
+              <h4 className="text-[10px] font-black tracking-widest text-zinc-500 uppercase border-b border-zinc-900 pb-2 flex items-center gap-2">
+                <Award className="w-3.5 h-3.5 text-orange-500" />
+                IMPROVEMENT (WHAT DO I NEED TO IMPROVE?)
+              </h4>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <span className="text-[9px] font-black text-zinc-500 uppercase block">Strongest Area</span>
+                  <span className="text-sm font-bold text-white uppercase">{strongestArea}</span>
+                </div>
+                <div>
+                  <span className="text-[9px] font-black text-orange-400/80 uppercase block">Weakest Area</span>
+                  <span className="text-sm font-bold text-orange-400 uppercase">{weakestArea}</span>
+                </div>
+              </div>
               <div className="space-y-1.5 pt-2 border-t border-zinc-900/60">
-                <span className="text-[9px] font-black text-zinc-550 uppercase block">RECOMMENDED FOCUS</span>
+                <span className="text-[9px] font-black text-zinc-500 uppercase block">Improvement Areas</span>
                 <ul className="space-y-1 text-xs">
-                  {recommendedFocusList.map((rec, i) => (
-                    <li key={i} className="text-zinc-300 flex items-start gap-2">
+                  {improvementAreas.map((area, idx) => (
+                    <li key={idx} className="text-zinc-300 flex items-start gap-2">
                       <span className="w-1.5 h-1.5 rounded-full bg-orange-500 mt-1.5 shrink-0" />
-                      {rec}
+                      {area}
                     </li>
                   ))}
                 </ul>
               </div>
             </div>
 
-            {/* HEALTH, NUTRITION, SLEEP, MENTAL READINESS METRICS (PLAYER VERSION) */}
-            {selfAverages ? (
+            {/* RECOMMENDATIONS */}
+            <div className="bg-zinc-955 bg-zinc-950 border border-zinc-900 rounded-3xl p-5 space-y-4 text-left">
+              <h4 className="text-[10px] font-black tracking-widest text-zinc-500 uppercase border-b border-zinc-900 pb-2 flex items-center gap-2">
+                <Sparkles className="w-3.5 h-3.5 text-orange-500" />
+                RECOMMENDATIONS
+              </h4>
+              <div>
+                <span className="text-[9px] font-black text-zinc-500 uppercase block">Recommended Practice Focus</span>
+                <p className="text-xs text-zinc-300 font-semibold mt-0.5">{recommendedPracticeFocus}</p>
+              </div>
+              <div className="pt-2 border-t border-zinc-900/60">
+                <span className="text-[9px] font-black text-zinc-500 uppercase block">Recommended Match Focus</span>
+                <p className="text-xs text-zinc-300 font-semibold mt-0.5">{recommendedMatchFocus}</p>
+              </div>
+              <div className="pt-2 border-t border-zinc-900/60">
+                <span className="text-[9px] font-black text-zinc-405 text-zinc-400 uppercase block">Recommended Development Areas</span>
+                <p className="text-xs text-orange-400 font-semibold mt-0.5">{recommendedDevelopmentAreas}</p>
+              </div>
+            </div>
+
+            {/* PLAYER VERSION: only if role === "player" */}
+            {role === "player" && (
               <div className="bg-zinc-955 bg-zinc-950 border border-zinc-900 p-5 rounded-3xl space-y-4 text-left">
                 <h4 className="text-[10px] font-black tracking-widest text-zinc-500 uppercase flex items-center gap-2 border-b border-zinc-900 pb-2">
                   <Heart className="w-3.5 h-3.5 text-rose-500" />
-                  HEALTH & READINESS (PLAYER LOGS)
+                  PLAYER HEALTH & READINESS LOGS
                 </h4>
-                <div className="grid grid-cols-2 gap-3 text-left">
-                  <div className="bg-zinc-900/50 p-3 rounded-2xl border border-zinc-900/60">
-                    <span className="text-[9px] font-black text-zinc-500 uppercase block">Sleep Metrics</span>
-                    <span className="text-sm font-bold text-white">{selfAverages.sleep}/10</span>
+                {selfAverages ? (
+                  <div className="space-y-3">
+                    <div className="grid grid-cols-2 gap-3 text-left">
+                      <div className="bg-zinc-900/50 p-3 rounded-2xl border border-zinc-900/60">
+                        <span className="text-[9px] font-black text-zinc-500 uppercase block">Sleep</span>
+                        <span className="text-sm font-bold text-white">{selfAverages.sleep}/10</span>
+                      </div>
+                      <div className="bg-zinc-900/50 p-3 rounded-2xl border border-zinc-900/60">
+                        <span className="text-[9px] font-black text-zinc-500 uppercase block">Nutrition</span>
+                        <span className="text-sm font-bold text-white">{selfAverages.nutrition}/10</span>
+                      </div>
+                      <div className="bg-zinc-900/50 p-3 rounded-2xl border border-zinc-900/60">
+                        <span className="text-[9px] font-black text-zinc-500 uppercase block">Health</span>
+                        <span className="text-sm font-bold text-white">{selfAverages.health}/10</span>
+                      </div>
+                      <div className="bg-zinc-900/50 p-3 rounded-2xl border border-zinc-900/60">
+                        <span className="text-[9px] font-black text-zinc-500 uppercase block">Fitness</span>
+                        <span className="text-sm font-bold text-white">{selfAverages.fitness}/10</span>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3 text-left">
+                      <div className="bg-zinc-900/50 p-3 rounded-2xl border border-zinc-900/60">
+                        <span className="text-[9px] font-black text-zinc-500 uppercase block">Mental Readiness</span>
+                        <span className="text-sm font-bold text-white">{selfAverages.mental}/10</span>
+                      </div>
+                      <div className="bg-zinc-900/50 p-3 rounded-2xl border border-zinc-900/60">
+                        <span className="text-[9px] font-black text-zinc-500 uppercase block">Preparation Quality</span>
+                        <span className="text-sm font-bold text-white">{selfAverages.preparation}/10</span>
+                      </div>
+                    </div>
                   </div>
-                  <div className="bg-zinc-900/50 p-3 rounded-2xl border border-zinc-900/60">
-                    <span className="text-[9px] font-black text-zinc-500 uppercase block">Nutrition Metrics</span>
-                    <span className="text-sm font-bold text-white">{selfAverages.nutrition}/10</span>
+                ) : (
+                  <div className="text-center py-4 text-xs text-zinc-650 font-bold uppercase">
+                    No player logs saved yet. Click "Log Self Assessment" to log health data.
                   </div>
-                  <div className="bg-zinc-900/50 p-3 rounded-2xl border border-zinc-900/60">
-                    <span className="text-[9px] font-black text-zinc-500 uppercase block">Warmup & Preparation</span>
-                    <span className="text-sm font-bold text-white">{selfAverages.preparation}/10</span>
-                  </div>
-                  <div className="bg-zinc-900/50 p-3 rounded-2xl border border-zinc-900/60">
-                    <span className="text-[9px] font-black text-zinc-500 uppercase block">Health & Body Metrics</span>
-                    <span className="text-sm font-bold text-white">{selfAverages.health}/10</span>
-                  </div>
-                </div>
-                <div className="bg-zinc-900/50 p-3 rounded-2xl border border-zinc-900/60">
-                  <span className="text-[9px] font-black text-orange-400 uppercase block">Mental Readiness Metrics</span>
-                  <span className="text-sm font-bold text-orange-400">{selfAverages.mental}/10</span>
-                </div>
-              </div>
-            ) : (
-              <div className="bg-zinc-950 border border-dashed border-zinc-900 p-5 rounded-3xl text-center py-6">
-                <p className="text-[10px] text-zinc-650 font-bold uppercase">No health, nutrition or mental readiness metrics logged</p>
+                )}
               </div>
             )}
-
-            {/* LAST 5 PRACTICE ASSESSMENTS */}
-            <div className="space-y-3 text-left">
-              <h4 className="text-[10px] font-black tracking-widest text-zinc-500 uppercase">
-                LAST 5 PRACTICE ASSESSMENTS
-              </h4>
-              {practiceHistory.length === 0 ? (
-                <p className="text-xs text-zinc-650 font-bold pl-2 uppercase">No practice assessments</p>
-              ) : (
-                <div className="space-y-3">
-                  {practiceHistory.slice(0, 5).map((p, idx) => (
-                    <div key={p.id || idx} className="bg-zinc-950 p-4 border border-zinc-900 rounded-2xl space-y-2">
-                      <div className="flex justify-between items-center border-b border-zinc-900/60 pb-2">
-                        <span className="text-[10px] font-black text-zinc-500 uppercase">
-                          Practice Grade ({new Date(p.date || p.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })})
-                        </span>
-                        <span className="text-sm font-black text-orange-500 bg-orange-500/10 px-2 py-0.5 rounded-lg">PPI {p.ppiScore.toFixed(1)}</span>
-                      </div>
-                      <div className="grid grid-cols-3 gap-2 text-center text-[10px]">
-                        <div><span className="text-zinc-500 block uppercase font-black">Technique</span><span className="text-white font-bold">{p.technique}/10</span></div>
-                        <div><span className="text-zinc-500 block uppercase font-black">Intensity</span><span className="text-white font-bold">{p.intensity}/10</span></div>
-                        <div><span className="text-zinc-500 block uppercase font-black">Execution</span><span className="text-white font-bold">{p.execution}/10</span></div>
-                        <div><span className="text-zinc-500 block uppercase font-black">Adapt</span><span className="text-white font-bold">{p.adaptability}/10</span></div>
-                        <div><span className="text-zinc-500 block uppercase font-black">Discip</span><span className="text-white font-bold">{p.discipline}/10</span></div>
-                        <div><span className="text-zinc-500 block uppercase font-black">Focus</span><span className="text-white font-bold">{p.focus}/10</span></div>
-                      </div>
-                      {p.notes && (
-                        <p className="text-[10px] text-zinc-400 italic bg-zinc-900/40 p-2 rounded-lg">"{p.notes}"</p>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* LAST 5 MATCH ASSESSMENTS */}
-            <div className="space-y-3 text-left border-t border-zinc-900 pt-6">
-              <h4 className="text-[10px] font-black tracking-widest text-zinc-500 uppercase">
-                LAST 5 MATCH ASSESSMENTS
-              </h4>
-              {matchHistory.length === 0 ? (
-                <p className="text-xs text-zinc-650 font-bold pl-2 uppercase">No match assessments</p>
-              ) : (
-                <div className="space-y-3">
-                  {matchHistory.slice(0, 5).map((m, idx) => (
-                    <div key={m.id || idx} className="bg-zinc-950 p-4 border border-zinc-900 rounded-2xl space-y-2">
-                      <div className="flex justify-between items-center border-b border-zinc-900/60 pb-2">
-                        <span className="text-[10px] font-black text-zinc-500 uppercase">
-                          Match Grade ({new Date(m.date || m.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })})
-                        </span>
-                        <span className="text-sm font-black text-orange-500 bg-orange-500/10 px-2 py-0.5 rounded-lg">MPI {m.mpiScore.toFixed(1)}</span>
-                      </div>
-                      <div className="grid grid-cols-3 gap-2 text-center text-[10px]">
-                        <div><span className="text-zinc-500 block uppercase font-black">Technical</span><span className="text-white font-bold">{m.technicalExecution}/10</span></div>
-                        <div><span className="text-zinc-500 block uppercase font-black">Decision</span><span className="text-white font-bold">{m.decisionMaking}/10</span></div>
-                        <div><span className="text-zinc-500 block uppercase font-black">Awareness</span><span className="text-white font-bold">{m.gameAwareness}/10</span></div>
-                        <div><span className="text-zinc-500 block uppercase font-black">Pressure</span><span className="text-white font-bold">{m.pressureHandling}/10</span></div>
-                        <div><span className="text-zinc-500 block uppercase font-black">Contrib</span><span className="text-white font-bold">{m.teamContribution}/10</span></div>
-                        <div><span className="text-zinc-500 block uppercase font-black">Impact</span><span className="text-white font-bold">{m.matchImpact}/10</span></div>
-                      </div>
-                      {m.notes && (
-                        <p className="text-[10px] text-zinc-400 italic bg-zinc-900/40 p-2 rounded-lg">"{m.notes}"</p>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* FULL ASSESSMENT HISTORY TIMELINES */}
-            <div className="space-y-4 pt-6 border-t border-zinc-900 text-left">
-              <div className="flex justify-between items-center">
-                <h4 className="text-[10px] font-black tracking-widest text-zinc-500 uppercase">
-                  FULL ASSESSMENT HISTORY
-                </h4>
-                <button
-                  onClick={() => setShowHistoryOverlay(true)}
-                  className="px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 text-white rounded-lg text-[10px] font-black transition-all border border-zinc-800 cursor-pointer uppercase tracking-wider"
-                >
-                  View Chronological Timeline
-                </button>
-              </div>
-            </div>
 
           </div>
         );
@@ -1355,7 +1385,8 @@ export default function PlayersPage() {
               { label: "NUTRITION", key: "nutrition", desc: "Proper hydration and dietary balance" },
               { label: "PREPARATION & WARMUP", key: "preparation", desc: "Focus routine and stretching readiness" },
               { label: "GENERAL HEALTH & BODY", key: "health", desc: "Lack of pain or stiffness" },
-              { label: "MENTAL READINESS", key: "mental", desc: "Confidence and cognitive calmness" }
+              { label: "MENTAL READINESS", key: "mental", desc: "Confidence and cognitive calmness" },
+              { label: "FITNESS & PHYSICAL STRENGTH", key: "fitness", desc: "General stamina, muscle soreness, and power level" }
             ].map((metric) => (
               <div key={metric.key} className="space-y-2 bg-zinc-950 p-4 border border-zinc-900 rounded-2xl">
                 <div className="flex justify-between items-start">
