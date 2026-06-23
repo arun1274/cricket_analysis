@@ -5,7 +5,8 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { api } from "@/lib/api";
 import { 
   Search, Plus, Loader2, ArrowLeft, Clipboard, ShieldCheck, 
-  Sparkles, ListCollapse, Award, Flame, Heart, Brain, X, Camera, CheckCircle2 
+  Sparkles, ListCollapse, Award, Flame, Heart, Brain, X, Camera, CheckCircle2,
+  Filter, Check
 } from "lucide-react";
 import PerformanceTrendChart from "@/components/PerformanceTrendChart";
 
@@ -43,6 +44,12 @@ export default function PlayersPage() {
   const [showRecsOverlay, setShowRecsOverlay] = useState(false);
   const [showSuccessOverlay, setShowSuccessOverlay] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
+  
+  // Filter States
+  const [showFilterOverlay, setShowFilterOverlay] = useState(false);
+  const [sortBy, setSortBy] = useState<"highest_cpi" | "lowest_cpi" | "highest_ppi" | "highest_mpi" | "recently_assessed">("highest_cpi");
+  const [quickFilter, setQuickFilter] = useState<"all" | "top_performers" | "needs_attention" | "assessed_today" | "not_assessed_recently">("all");
+  const [roleFilter, setRoleFilter] = useState<"all" | "batsman" | "bowler" | "all_rounder" | "wicket_keeper">("all");
 
   // Form states
   const [newPlayer, setNewPlayer] = useState({
@@ -558,10 +565,93 @@ export default function PlayersPage() {
       .toUpperCase();
   };
 
-  const filteredPlayers = players.filter((p) =>
-    p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    p.role.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const getPlayerScores = (p: Player) => {
+    const ppi = p.ppiScore && p.ppiScore > 0 ? p.ppiScore : null;
+    const mpi = p.mpiScore && p.mpiScore > 0 ? p.mpiScore : null;
+    const cpi = ppi && mpi 
+      ? (ppi + mpi) / 2 
+      : ppi 
+        ? ppi 
+        : mpi 
+          ? mpi 
+          : null;
+    return { ppi: ppi || 0, mpi: mpi || 0, cpi: cpi || 0 };
+  };
+
+  const getAssessDaysAgo = (pId: number) => {
+    const dateStr = lastAssessmentDates[pId];
+    if (!dateStr || dateStr === "No assessments" || dateStr === "Loading...") return 999;
+    const diffTime = Math.abs(new Date().getTime() - new Date(dateStr).getTime());
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  };
+
+  const filteredPlayers = players.filter((p) => {
+    // 1. Search Query
+    const searchMatch = searchQuery === "" || 
+      p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p.role.toLowerCase().includes(searchQuery.toLowerCase());
+    if (!searchMatch) return false;
+
+    // 2. Role Filter
+    if (roleFilter !== "all") {
+      const r = p.role.toLowerCase();
+      if (roleFilter === "batsman") {
+        if (!r.includes("batsman") && !r.includes("batter")) return false;
+      } else if (roleFilter === "bowler") {
+        if (!r.includes("bowler")) return false;
+      } else if (roleFilter === "all_rounder") {
+        if (!r.includes("all-rounder") && !r.includes("all rounder") && !r.includes("allrounder")) return false;
+      } else if (roleFilter === "wicket_keeper") {
+        if (!r.includes("wicketkeeper") && !r.includes("wicket-keeper") && !r.includes("wicket keeper") && !r.includes("keeper")) return false;
+      }
+    }
+
+    // 3. Quick Filter
+    const scores = getPlayerScores(p);
+    if (quickFilter === "top_performers") {
+      if (scores.cpi < 6.5) return false;
+    } else if (quickFilter === "needs_attention") {
+      if (scores.cpi >= 6.5 || scores.cpi === 0) return false;
+    } else if (quickFilter === "assessed_today") {
+      const todayStr = new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+      if (lastAssessmentDates[p.id] !== todayStr) return false;
+    } else if (quickFilter === "not_assessed_recently") {
+      const days = getAssessDaysAgo(p.id);
+      if (days < 7) return false;
+    }
+
+    return true;
+  });
+
+  const sortedPlayers = [...filteredPlayers].sort((a, b) => {
+    const aScores = getPlayerScores(a);
+    const bScores = getPlayerScores(b);
+
+    if (sortBy === "highest_cpi") {
+      if (aScores.cpi === 0) return 1;
+      if (bScores.cpi === 0) return -1;
+      return bScores.cpi - aScores.cpi;
+    }
+    if (sortBy === "lowest_cpi") {
+      if (aScores.cpi === 0) return 1;
+      if (bScores.cpi === 0) return -1;
+      return aScores.cpi - bScores.cpi;
+    }
+    if (sortBy === "highest_ppi") {
+      if (aScores.ppi === 0) return 1;
+      if (bScores.ppi === 0) return -1;
+      return bScores.ppi - aScores.ppi;
+    }
+    if (sortBy === "highest_mpi") {
+      if (aScores.mpi === 0) return 1;
+      if (bScores.mpi === 0) return -1;
+      return bScores.mpi - aScores.mpi;
+    }
+    if (sortBy === "recently_assessed") {
+      return getAssessDaysAgo(a.id) - getAssessDaysAgo(b.id);
+    }
+    return 0;
+  });
 
   return (
     <div className="space-y-6 pb-12 select-none">
@@ -578,7 +668,7 @@ export default function PlayersPage() {
       {view === "list" && (
         <div className="space-y-6">
           
-          {/* Top Row: Search & Add */}
+          {/* Top Row: Search & Filter & Add */}
           <div className="space-y-4">
             <div className="flex items-center gap-3">
               <div className="relative flex-1">
@@ -591,6 +681,19 @@ export default function PlayersPage() {
                   className="w-full h-14 bg-zinc-950 border-2 border-zinc-900 rounded-2xl pl-12 pr-4 text-base font-bold text-white placeholder-zinc-650 focus:outline-none focus:border-orange-500 transition-colors uppercase"
                 />
               </div>
+
+              <button
+                onClick={() => setShowFilterOverlay(true)}
+                className={`h-14 w-14 rounded-2xl flex items-center justify-center border shrink-0 cursor-pointer transition-all active:scale-95 ${
+                  sortBy !== "highest_cpi" || quickFilter !== "all" || roleFilter !== "all"
+                    ? "bg-orange-500 text-black border-orange-400"
+                    : "bg-zinc-950 border-2 border-zinc-900 text-zinc-400 hover:text-white"
+                }`}
+                title="Filter Squad"
+              >
+                <Filter className="w-6 h-6" />
+              </button>
+
               {role !== "player" && (
                 <button
                   onClick={() => setShowAddForm(true)}
@@ -601,6 +704,49 @@ export default function PlayersPage() {
                 </button>
               )}
             </div>
+
+            {/* Active Filter Chips */}
+            {(sortBy !== "highest_cpi" || quickFilter !== "all" || roleFilter !== "all") && (
+              <div className="flex flex-wrap gap-2 text-left pt-1">
+                {quickFilter !== "all" && (
+                  <span 
+                    onClick={() => setQuickFilter("all")}
+                    className="px-3 py-1.5 bg-orange-500/10 border border-orange-500/35 text-orange-400 rounded-full text-[10px] font-black uppercase flex items-center gap-1.5 cursor-pointer hover:bg-orange-500/20"
+                  >
+                    Filter: {quickFilter.replace(/_/g, " ")}
+                    <X className="w-3 h-3 stroke-[3]" />
+                  </span>
+                )}
+                {roleFilter !== "all" && (
+                  <span 
+                    onClick={() => setRoleFilter("all")}
+                    className="px-3 py-1.5 bg-orange-500/10 border border-orange-500/35 text-orange-400 rounded-full text-[10px] font-black uppercase flex items-center gap-1.5 cursor-pointer hover:bg-orange-500/20"
+                  >
+                    Role: {roleFilter.replace(/_/g, " ")}
+                    <X className="w-3 h-3 stroke-[3]" />
+                  </span>
+                )}
+                {sortBy !== "highest_cpi" && (
+                  <span 
+                    onClick={() => setSortBy("highest_cpi")}
+                    className="px-3 py-1.5 bg-orange-500/10 border border-orange-500/35 text-orange-400 rounded-full text-[10px] font-black uppercase flex items-center gap-1.5 cursor-pointer hover:bg-orange-500/20"
+                  >
+                    Sort: {sortBy.replace(/_/g, " ")}
+                    <X className="w-3 h-3 stroke-[3]" />
+                  </span>
+                )}
+                <button 
+                  onClick={() => {
+                    setSortBy("highest_cpi");
+                    setQuickFilter("all");
+                    setRoleFilter("all");
+                  }}
+                  className="text-[9px] font-black text-zinc-500 hover:text-white uppercase tracking-wider pl-1 cursor-pointer"
+                >
+                  Clear All
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Add Player Form (Clean inline card) */}
@@ -705,13 +851,13 @@ export default function PlayersPage() {
               <Loader2 className="w-8 h-8 text-orange-500 animate-spin" />
               <p className="text-zinc-500 font-bold uppercase tracking-wider text-xs">Loading Squad...</p>
             </div>
-          ) : filteredPlayers.length === 0 ? (
+          ) : sortedPlayers.length === 0 ? (
             <div className="text-center py-16 text-zinc-500 font-bold uppercase tracking-wider text-sm border-2 border-dashed border-zinc-900 rounded-3xl">
               No players found
             </div>
           ) : (
             <div className="space-y-4">
-              {filteredPlayers.map((player) => {
+              {sortedPlayers.map((player) => {
                 const cpi = player.ppiScore && player.mpiScore && player.ppiScore > 0 && player.mpiScore > 0
                   ? ((player.ppiScore + player.mpiScore) / 2).toFixed(1)
                   : player.ppiScore && player.ppiScore > 0
@@ -1555,6 +1701,116 @@ export default function PlayersPage() {
                 </p>
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* ------------------ OVERLAY: FILTER & SORT ------------------ */}
+      {showFilterOverlay && (
+        <div className="fixed inset-0 bg-black/80 z-[60] flex items-end justify-center animate-fade-in select-none">
+          <div className="bg-zinc-950 border-t-2 border-zinc-900 w-full max-w-lg rounded-t-[32px] p-6 space-y-6 pb-10 shadow-2xl animate-slide-up">
+            
+            <div className="flex justify-between items-center pb-2 border-b border-zinc-900">
+              <div className="space-y-0.5">
+                <h3 className="text-xl font-black text-white uppercase tracking-tight text-left">FILTER & SORT SQUAD</h3>
+                <p className="text-[10px] text-zinc-500 font-bold uppercase text-left">{sortedPlayers.length} players matched</p>
+              </div>
+              <button 
+                onClick={() => setShowFilterOverlay(false)} 
+                className="p-2 rounded-xl bg-zinc-900 text-zinc-400 hover:text-white transition-colors cursor-pointer"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            {/* SORT BY */}
+            <div className="space-y-2 text-left">
+              <label className="text-[9px] font-black tracking-widest text-zinc-500 uppercase">SORT BY</label>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { label: "Highest CPI", val: "highest_cpi" },
+                  { label: "Lowest CPI", val: "lowest_cpi" },
+                  { label: "Highest PPI", val: "highest_ppi" },
+                  { label: "Highest MPI", val: "highest_mpi" },
+                  { label: "Recently Assessed", val: "recently_assessed" }
+                ].map((opt) => (
+                  <button
+                    key={opt.val}
+                    type="button"
+                    onClick={() => setSortBy(opt.val as any)}
+                    className={`px-3.5 py-2 rounded-xl text-xs font-black uppercase transition-all cursor-pointer border ${
+                      sortBy === opt.val
+                        ? "bg-white text-black border-white"
+                        : "bg-zinc-900 text-zinc-400 border-zinc-850 hover:border-zinc-700"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* QUICK FILTERS */}
+            <div className="space-y-2 text-left">
+              <label className="text-[9px] font-black tracking-widest text-zinc-500 uppercase">QUICK FILTERS</label>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { label: "All Players", val: "all" },
+                  { label: "Top Performers", val: "top_performers" },
+                  { label: "Needs Attention", val: "needs_attention" },
+                  { label: "Assessed Today", val: "assessed_today" },
+                  { label: "Not Assessed Recently", val: "not_assessed_recently" }
+                ].map((opt) => (
+                  <button
+                    key={opt.val}
+                    type="button"
+                    onClick={() => setQuickFilter(opt.val as any)}
+                    className={`px-3.5 py-2 rounded-xl text-xs font-black uppercase transition-all cursor-pointer border ${
+                      quickFilter === opt.val
+                        ? "bg-orange-500 text-black border-orange-450"
+                        : "bg-zinc-900 text-zinc-400 border-zinc-850 hover:border-zinc-700"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* ROLE FILTERS */}
+            <div className="space-y-2 text-left">
+              <label className="text-[9px] font-black tracking-widest text-zinc-500 uppercase">ROLE FILTERS</label>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { label: "All Roles", val: "all" },
+                  { label: "Batsman", val: "batsman" },
+                  { label: "Bowler", val: "bowler" },
+                  { label: "All Rounder", val: "all_rounder" },
+                  { label: "Wicket Keeper", val: "wicket_keeper" }
+                ].map((opt) => (
+                  <button
+                    key={opt.val}
+                    type="button"
+                    onClick={() => setRoleFilter(opt.val as any)}
+                    className={`px-3.5 py-2 rounded-xl text-xs font-black uppercase transition-all cursor-pointer border ${
+                      roleFilter === opt.val
+                        ? "bg-orange-500 text-black border-orange-450"
+                        : "bg-zinc-900 text-zinc-400 border-zinc-850 hover:border-zinc-700"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setShowFilterOverlay(false)}
+              className="w-full bg-white hover:bg-zinc-200 text-black rounded-xl py-4 text-base font-black transition-all cursor-pointer flex items-center justify-center border-2 border-white shadow-xl active:scale-98"
+            >
+              APPLY & VIEW SQUAD
+            </button>
           </div>
         </div>
       )}
