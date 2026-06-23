@@ -6,7 +6,7 @@ import { api } from "@/lib/api";
 import { 
   Search, Plus, Loader2, ArrowLeft, Clipboard, ShieldCheck, 
   Sparkles, ListCollapse, Award, Flame, Heart, Brain, X, Camera, CheckCircle2,
-  Filter, Check
+  Filter, Check, Copy
 } from "lucide-react";
 import PerformanceTrendChart from "@/components/PerformanceTrendChart";
 
@@ -52,6 +52,7 @@ export default function PlayersPage() {
   const [sortBy, setSortBy] = useState<"highest_cpi" | "lowest_cpi" | "highest_ppi" | "highest_mpi" | "recently_assessed">("highest_cpi");
   const [quickFilter, setQuickFilter] = useState<"all" | "top_performers" | "needs_attention" | "assessed_today" | "not_assessed_recently">("all");
   const [roleFilter, setRoleFilter] = useState<"all" | "batsman" | "bowler" | "all_rounder" | "wicket_keeper">("all");
+  const [copiedCode, setCopiedCode] = useState(false);
 
   // Form states
   const [newPlayer, setNewPlayer] = useState({
@@ -1120,12 +1121,29 @@ export default function PlayersPage() {
                   Last Assessed: {lastAssessmentDate}
                 </div>
                 {selectedPlayer.invitationCode && (
-                  <div className="mt-3 bg-zinc-900 border border-zinc-850 rounded-2xl p-3 inline-block">
-                    <span className="text-[8px] font-black text-zinc-500 uppercase tracking-widest block">PLAYER INVITATION CODE</span>
-                    <span className="text-sm font-mono font-black text-orange-500 uppercase tracking-wider block mt-1">
-                      {selectedPlayer.invitationCode}
-                    </span>
-                    <span className="text-[7px] font-bold text-zinc-400 uppercase block mt-0.5">
+                  <div className="mt-3 bg-zinc-900 border border-zinc-850 rounded-2xl p-3 inline-block min-w-[200px]">
+                    <span className="text-[8px] font-black text-zinc-500 uppercase tracking-widest block text-center">PLAYER INVITATION CODE</span>
+                    <div className="flex items-center justify-center gap-2 mt-1.5">
+                      <span className="text-sm font-mono font-black text-orange-500 uppercase tracking-wider">
+                        {selectedPlayer.invitationCode}
+                      </span>
+                      <button
+                        onClick={() => {
+                          navigator.clipboard.writeText(selectedPlayer.invitationCode || "");
+                          setCopiedCode(true);
+                          setTimeout(() => setCopiedCode(false), 2000);
+                        }}
+                        className="p-1 hover:bg-zinc-850 rounded transition-colors text-zinc-450 hover:text-white cursor-pointer"
+                        title="Copy Code"
+                      >
+                        {copiedCode ? (
+                          <Check className="w-3.5 h-3.5 text-green-500 stroke-[3]" />
+                        ) : (
+                          <Copy className="w-3.5 h-3.5 stroke-[2.5]" />
+                        )}
+                      </button>
+                    </div>
+                    <span className="text-[7px] font-bold text-zinc-400 uppercase block text-center mt-1">
                       {selectedPlayer.invitationCodeActivated ? "Activated" : "Pending activation"}
                     </span>
                   </div>
