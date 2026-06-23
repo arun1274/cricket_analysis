@@ -31,4 +31,11 @@ public class AuthController {
     ) {
         return ResponseEntity.ok(service.authenticate(request));
     }
+
+    @org.springframework.web.bind.annotation.GetMapping("/validate-code")
+    public ResponseEntity<java.util.Map<String, Object>> validateCode(
+            @org.springframework.web.bind.annotation.RequestParam String code
+    ) {
+        return ResponseEntity.ok(service.validateCode(code));
+    }
 }

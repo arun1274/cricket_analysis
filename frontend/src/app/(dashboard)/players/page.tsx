@@ -18,6 +18,8 @@ interface Player {
   bowlingStyle: string;
   ppiScore: number | null;
   mpiScore: number | null;
+  invitationCode?: string;
+  invitationCodeActivated?: boolean;
 }
 
 export default function PlayersPage() {
@@ -1117,6 +1119,17 @@ export default function PlayersPage() {
                 <div className="text-[9px] text-zinc-500 font-bold uppercase tracking-wider">
                   Last Assessed: {lastAssessmentDate}
                 </div>
+                {selectedPlayer.invitationCode && (
+                  <div className="mt-3 bg-zinc-900 border border-zinc-850 rounded-2xl p-3 inline-block">
+                    <span className="text-[8px] font-black text-zinc-500 uppercase tracking-widest block">PLAYER INVITATION CODE</span>
+                    <span className="text-sm font-mono font-black text-orange-500 uppercase tracking-wider block mt-1">
+                      {selectedPlayer.invitationCode}
+                    </span>
+                    <span className="text-[7px] font-bold text-zinc-400 uppercase block mt-0.5">
+                      {selectedPlayer.invitationCodeActivated ? "Activated" : "Pending activation"}
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
 

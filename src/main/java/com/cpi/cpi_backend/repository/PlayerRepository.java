@@ -11,4 +11,5 @@ import java.util.List;
 @Repository
 public interface PlayerRepository extends JpaRepository<Player, Long> {
     List<Player> findByCreatorCoachId(Long coachId);
+    java.util.Optional<Player> findByInvitationCode(String invitationCode);
 }

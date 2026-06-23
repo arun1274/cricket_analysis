@@ -26,4 +26,5 @@ public class RegisterRequest {
 
     // Join Code Field (Option 2)
     private String joinCode;
+    private String invitationCode;
 }

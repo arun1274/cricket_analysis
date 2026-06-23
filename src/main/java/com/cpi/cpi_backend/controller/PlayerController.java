@@ -62,6 +62,16 @@ public class PlayerController {
         return ResponseEntity.ok(allPlayers);
     }
 
+    private String generateInvitationCode() {
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        java.util.Random rnd = new java.util.Random();
+        StringBuilder sb = new StringBuilder(6);
+        for (int i = 0; i < 6; i++) {
+            sb.append(chars.charAt(rnd.nextInt(chars.length())));
+        }
+        return "CPI-" + sb.toString();
+    }
+
     @PostMapping
     @Transactional
     public ResponseEntity<Player> createPlayer(
@@ -71,6 +81,11 @@ public class PlayerController {
         Coach creatorCoach = coachRepository.findById(currentCoach.getId())
                 .orElseThrow(() -> new RuntimeException("Coach not found"));
 
+        String code;
+        do {
+            code = generateInvitationCode();
+        } while (playerRepository.findByInvitationCode(code).isPresent());
+
         Player player = Player.builder()
                 .name(request.getName())
                 .role(request.getRole())
@@ -79,6 +94,8 @@ public class PlayerController {
                 .creatorCoach(creatorCoach)
                 .ppiScore(0.0)
                 .mpiScore(0.0)
+                .invitationCode(code)
+                .invitationCodeActivated(false)
                 .build();
                 
         return ResponseEntity.ok(playerRepository.save(player));

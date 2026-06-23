@@ -37,6 +37,11 @@ public class Player {
     @com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "password"})
     private Coach creatorCoach;
 
+    private String invitationCode;
+
+    @Builder.Default
+    private Boolean invitationCodeActivated = false;
+
     @CreationTimestamp
     private LocalDateTime createdAt;
 }
