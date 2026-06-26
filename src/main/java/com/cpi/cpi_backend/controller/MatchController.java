@@ -52,8 +52,6 @@ public class MatchController {
             authorized = true;
         } else if (player.getName() != null && player.getName().equalsIgnoreCase(managedCoach.getName())) {
             authorized = true;
-        } else if (managedCoach.getRole() == com.cpi.cpi_backend.entity.Role.ADMIN) {
-            authorized = true;
         }
 
         if (!authorized) {
@@ -106,13 +104,8 @@ public class MatchController {
 
         Coach managedCoach = coachRepository.findById(currentCoach.getId())
                 .orElseThrow(() -> new RuntimeException("Coach not found"));
-        boolean authorized = false;
-        if (managedCoach.getRole() == com.cpi.cpi_backend.entity.Role.ADMIN) {
-            authorized = true;
-        } else {
-            authorized = (player.getCreatorCoach() != null && player.getCreatorCoach().getId().equals(managedCoach.getId())) ||
-                    (player.getName() != null && player.getName().equalsIgnoreCase(managedCoach.getName()));
-        }
+        boolean authorized = (player.getCreatorCoach() != null && player.getCreatorCoach().getId().equals(managedCoach.getId())) ||
+                (player.getName() != null && player.getName().equalsIgnoreCase(managedCoach.getName()));
         if (!authorized) {
             throw new RuntimeException("Unauthorized");
         }

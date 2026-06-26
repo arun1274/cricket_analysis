@@ -34,26 +34,23 @@ public class DashboardController {
         Coach managedCoach = coachRepository.findById(coachId)
                 .orElseThrow(() -> new RuntimeException("Coach not found"));
 
-        List<Player> players;
-        List<PracticeAssessment> practiceAssessments;
-        List<MatchAssessment> matchAssessments;
+        final List<Player> players = new ArrayList<>();
+        final List<PracticeAssessment> practiceAssessments = new ArrayList<>();
+        final List<MatchAssessment> matchAssessments = new ArrayList<>();
 
         if (managedCoach.getRole() == Role.ADMIN) {
-            players = playerRepository.findAll();
-            practiceAssessments = practiceAssessmentRepository.findAll();
-            matchAssessments = matchAssessmentRepository.findAll();
+            players.addAll(playerRepository.findByCreatorCoachId(coachId));
+            practiceAssessments.addAll(practiceAssessmentRepository.findByCoachId(coachId));
+            matchAssessments.addAll(matchAssessmentRepository.findByCoachId(coachId));
         } else {
-            players = new ArrayList<>(playerRepository.findByCreatorCoachId(coachId));
-            // Also check if there's a player record with their name (for self-assessments)
-            boolean hasSelf = players.stream().anyMatch(p -> p.getName() != null && p.getName().equalsIgnoreCase(managedCoach.getName()));
-            if (!hasSelf) {
-                playerRepository.findAll().stream()
-                        .filter(p -> p.getName() != null && p.getName().equalsIgnoreCase(managedCoach.getName()))
-                        .findFirst()
-                        .ifPresent(players::add);
-            }
-            practiceAssessments = practiceAssessmentRepository.findByCoachId(coachId);
-            matchAssessments = matchAssessmentRepository.findByCoachId(coachId);
+            playerRepository.findAll().stream()
+                    .filter(p -> p.getName() != null && p.getName().equalsIgnoreCase(managedCoach.getName()))
+                    .findFirst()
+                    .ifPresent(p -> {
+                        players.add(p);
+                        practiceAssessments.addAll(practiceAssessmentRepository.findByPlayerId(p.getId()));
+                        matchAssessments.addAll(matchAssessmentRepository.findByPlayerId(p.getId()));
+                    });
         }
 
         // Compute Card Stats

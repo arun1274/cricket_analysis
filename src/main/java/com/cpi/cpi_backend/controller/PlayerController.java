@@ -27,15 +27,11 @@ public class PlayerController {
         Coach managedCoach = coachRepository.findById(currentCoach.getId())
                 .orElseThrow(() -> new RuntimeException("Coach not found"));
 
-        if (managedCoach.getRole() == Role.ADMIN) {
-            return;
-        } else {
-            boolean isCreator = player.getCreatorCoach() != null && player.getCreatorCoach().getId().equals(managedCoach.getId());
-            boolean isSelf = player.getName() != null && player.getName().equalsIgnoreCase(managedCoach.getName());
-            
-            if (!isCreator && !isSelf) {
-                throw new RuntimeException("Unauthorized");
-            }
+        boolean isCreator = player.getCreatorCoach() != null && player.getCreatorCoach().getId().equals(managedCoach.getId());
+        boolean isSelf = player.getName() != null && player.getName().equalsIgnoreCase(managedCoach.getName());
+        
+        if (!isCreator && !isSelf) {
+            throw new RuntimeException("Unauthorized");
         }
     }
 
@@ -47,18 +43,13 @@ public class PlayerController {
 
         List<Player> allPlayers;
         if (managedCoach.getRole() == Role.ADMIN) {
-            allPlayers = new ArrayList<>(playerRepository.findAll());
-        } else {
             allPlayers = new ArrayList<>(playerRepository.findByCreatorCoachId(managedCoach.getId()));
-            
-            // Also check if there's a player record with their name
-            boolean hasSelf = allPlayers.stream().anyMatch(p -> p.getName() != null && p.getName().equalsIgnoreCase(managedCoach.getName()));
-            if (!hasSelf) {
-                playerRepository.findAll().stream()
-                        .filter(p -> p.getName() != null && p.getName().equalsIgnoreCase(managedCoach.getName()))
-                        .findFirst()
-                        .ifPresent(allPlayers::add);
-            }
+        } else {
+            allPlayers = new ArrayList<>();
+            playerRepository.findAll().stream()
+                    .filter(p -> p.getName() != null && p.getName().equalsIgnoreCase(managedCoach.getName()))
+                    .findFirst()
+                    .ifPresent(allPlayers::add);
         }
 
         // Generate invitation codes for any players missing one
