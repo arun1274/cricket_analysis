@@ -34,7 +34,7 @@ export default function PlayersPage() {
   const [lastAssessmentDates, setLastAssessmentDates] = useState<Record<number, string>>({});
 
   // View state: 'list' | 'profile'
-  const [view, setView] = useState<"list" | "profile">("list");
+  const [view, setView] = useState<"list" | "profile">(searchParams.get("id") ? "profile" : "list");
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
 
   // Modals / Overlays
@@ -222,9 +222,11 @@ export default function PlayersPage() {
       if (idParam) {
         const found = players.find((p) => p.id === Number(idParam));
         if (found) {
-          setSelectedPlayer(found);
-          setView("profile");
-          loadHistory(found.id);
+          if (!selectedPlayer || selectedPlayer.id !== found.id) {
+            setSelectedPlayer(found);
+            setView("profile");
+            loadHistory(found.id);
+          }
           
           const action = searchParams.get("action");
           if (action === "practice") {
@@ -233,14 +235,18 @@ export default function PlayersPage() {
             setShowMatchOverlay(true);
           }
           return;
+        } else {
+          setView("list");
         }
       }
 
       const actionParam = searchParams.get("action");
       if (actionParam && !idParam) {
-        setSelectedPlayer(players[0]);
-        setView("profile");
-        loadHistory(players[0].id);
+        if (!selectedPlayer || selectedPlayer.id !== players[0].id) {
+          setSelectedPlayer(players[0]);
+          setView("profile");
+          loadHistory(players[0].id);
+        }
         if (actionParam === "practice") {
           setShowPracticeOverlay(true);
         } else if (actionParam === "match") {
@@ -256,17 +262,21 @@ export default function PlayersPage() {
           ) || players[0];
           
           if (matchingPlayer) {
-            setSelectedPlayer(matchingPlayer);
-            setView("profile");
-            loadHistory(matchingPlayer.id);
+            if (!selectedPlayer || selectedPlayer.id !== matchingPlayer.id) {
+              setSelectedPlayer(matchingPlayer);
+              setView("profile");
+              loadHistory(matchingPlayer.id);
+            }
             if (searchParams.get("selfAssess") === "true") {
               setShowSelfOverlay(true);
             }
           }
         }).catch(() => {
-          setSelectedPlayer(players[0]);
-          setView("profile");
-          loadHistory(players[0].id);
+          if (!selectedPlayer || selectedPlayer.id !== players[0].id) {
+            setSelectedPlayer(players[0]);
+            setView("profile");
+            loadHistory(players[0].id);
+          }
           if (searchParams.get("selfAssess") === "true") {
             setShowSelfOverlay(true);
           }
@@ -278,20 +288,28 @@ export default function PlayersPage() {
           ) || players[0];
           
           if (matchingPlayer) {
-            setSelectedPlayer(matchingPlayer);
-            setView("profile");
+            if (!selectedPlayer || selectedPlayer.id !== matchingPlayer.id) {
+              setSelectedPlayer(matchingPlayer);
+              setView("profile");
+              loadHistory(matchingPlayer.id);
+            }
             setShowSelfOverlay(true);
-            loadHistory(matchingPlayer.id);
           }
         }).catch(() => {
-          setSelectedPlayer(players[0]);
-          setView("profile");
+          if (!selectedPlayer || selectedPlayer.id !== players[0].id) {
+            setSelectedPlayer(players[0]);
+            setView("profile");
+            loadHistory(players[0].id);
+          }
           setShowSelfOverlay(true);
-          loadHistory(players[0].id);
         });
       }
+    } else if (!loading) {
+      if (searchParams.get("id")) {
+        setView("list");
+      }
     }
-  }, [players, role, searchParams]);
+  }, [players, role, searchParams, loading, selectedPlayer]);
 
   const loadHistory = async (playerId: number) => {
     try {
@@ -369,6 +387,7 @@ export default function PlayersPage() {
     setSelectedPlayer(player);
     setView("profile");
     loadHistory(player.id);
+    router.replace(`/players?id=${player.id}`);
     
     const action = searchParams.get("action");
     if (action === "practice") {
@@ -946,6 +965,14 @@ export default function PlayersPage() {
               })}
             </div>
           )}
+        </div>
+      )}
+
+      {/* ------------------ VIEW: PLAYER PROFILE LOADING ------------------ */}
+      {view === "profile" && !selectedPlayer && (
+        <div className="flex flex-col items-center py-40 gap-3">
+          <Loader2 className="w-8 h-8 text-orange-500 animate-spin" />
+          <p className="text-zinc-500 font-bold uppercase tracking-wider text-xs">Loading Profile...</p>
         </div>
       )}
 
