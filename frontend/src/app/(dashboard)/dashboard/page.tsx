@@ -511,11 +511,11 @@ export default function DashboardPage() {
                     <div className="space-y-0.5 text-left">
                       <span className="text-base font-black text-white uppercase block">{a.playerName}</span>
                       <span className="text-[11px] font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wide block mt-0.5">
-                        {a.assessmentType === "PRACTICE" ? "Practice Assessment" : "Match Assessment"}
+                        {a.assessmentType === "PRACTICE" ? "Practice Assessment" : "Match Assessment"} • {formatActivityDate(a.date)}
                       </span>
                     </div>
-                    <span className="text-[11px] font-bold text-zinc-600 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 px-2.5 py-1 rounded-lg uppercase tracking-wide">
-                      {formatActivityDate(a.date)}
+                    <span className="text-sm font-black text-orange-400 bg-orange-500/10 px-3 py-1 rounded-xl uppercase tracking-wider shrink-0">
+                      {a.assessmentType === "PRACTICE" ? "PPI" : "MPI"} {a.score ? formatScoreValue(a.score) : "N/A"}
                     </span>
                   </div>
                 ))
