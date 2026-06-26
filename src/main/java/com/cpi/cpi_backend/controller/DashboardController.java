@@ -235,8 +235,8 @@ public class DashboardController {
             if (b.getDate() == null) return -1;
             return b.getDate().compareTo(a.getDate());
         });
-        if (recentAssessments.size() > 5) {
-            recentAssessments = recentAssessments.subList(0, 5);
+        if (recentAssessments.size() > 20) {
+            recentAssessments = recentAssessments.subList(0, 20);
         }
 
         // Players Needing Attention & Top Performers
