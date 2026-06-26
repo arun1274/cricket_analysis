@@ -1505,14 +1505,14 @@ export default function PlayersPage() {
 
             {/* SECTION 5 – RECOMMENDED FOCUS */}
             <div className="bg-zinc-950 border-2 border-zinc-900 rounded-3xl p-5.5 space-y-4 text-left">
-              <h3 className="text-xs font-black tracking-widest text-zinc-400 uppercase border-b border-zinc-900 pb-2 flex items-center gap-2">
+              <h3 className="text-sm font-extrabold tracking-widest text-zinc-800 dark:text-zinc-200 uppercase border-b border-zinc-200 dark:border-zinc-800 pb-2 flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-orange-500" />
                 RECOMMENDED FOCUS
               </h3>
               <div className="space-y-2.5 pt-1">
                 {focusAreas.map((focus, idx) => (
-                  <div key={idx} className="flex items-center gap-3 bg-zinc-900/35 p-3 rounded-xl border border-zinc-900 text-xs font-bold text-zinc-205 text-zinc-200">
-                    <span className="w-5 h-5 rounded-full bg-orange-500/10 text-orange-500 flex items-center justify-center font-black text-[10px]">
+                  <div key={idx} className="flex items-center gap-3 bg-zinc-100 dark:bg-zinc-900/50 p-3 rounded-xl border border-zinc-300 dark:border-zinc-800 text-[13px] font-black text-zinc-900 dark:text-white">
+                    <span className="w-6 h-6 rounded-full bg-orange-500/20 text-orange-600 dark:text-orange-400 flex items-center justify-center font-black text-xs shrink-0">
                       {idx + 1}
                     </span>
                     {focus}
