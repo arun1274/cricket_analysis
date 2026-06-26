@@ -419,110 +419,115 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* 4. PLAYERS NEEDING ATTENTION */}
-      <div className="space-y-3 text-left">
-        <h3 className="text-[10px] font-black tracking-widest text-zinc-500 uppercase flex items-center gap-2">
-          <AlertTriangle className="w-3.5 h-3.5 text-red-500" />
-          PLAYERS NEEDING ATTENTION
-        </h3>
-        <div className="bg-zinc-950 border border-zinc-900 rounded-3xl divide-y divide-zinc-900/60 overflow-hidden">
-          {stats?.playersNeedingAttention && stats.playersNeedingAttention.length > 0 ? (
-            stats.playersNeedingAttention.map((p, idx) => {
-              const lastDate = lastAssessmentDates[p.name.toLowerCase()] || "No assessments";
-              return (
-                <div
-                  key={idx}
-                  onClick={() => navigateToPlayer(p.name)}
-                  className="p-5 flex justify-between items-center hover:bg-zinc-900/40 cursor-pointer transition-colors active:bg-zinc-900/60"
-                >
-                  <div className="space-y-0.5">
-                    <span className="text-base font-black text-white uppercase block">{p.name}</span>
-                    <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-wide block">
-                      Last Assessed: {lastDate}
+      {/* COACH SPECIFIC SECTIONS */}
+      {role !== "player" && (
+        <div className="space-y-8">
+          {/* 4. PLAYERS NEEDING ATTENTION */}
+          <div className="space-y-3 text-left">
+            <h3 className="text-[10px] font-black tracking-widest text-zinc-500 uppercase flex items-center gap-2">
+              <AlertTriangle className="w-3.5 h-3.5 text-red-500" />
+              PLAYERS NEEDING ATTENTION
+            </h3>
+            <div className="bg-zinc-950 border border-zinc-900 rounded-3xl divide-y divide-zinc-900/60 overflow-hidden">
+              {stats?.playersNeedingAttention && stats.playersNeedingAttention.length > 0 ? (
+                stats.playersNeedingAttention.map((p, idx) => {
+                  const lastDate = lastAssessmentDates[p.name.toLowerCase()] || "No assessments";
+                  return (
+                    <div
+                      key={idx}
+                      onClick={() => navigateToPlayer(p.name)}
+                      className="p-5 flex justify-between items-center hover:bg-zinc-900/40 cursor-pointer transition-colors active:bg-zinc-900/60"
+                    >
+                      <div className="space-y-0.5">
+                        <span className="text-base font-black text-white uppercase block">{p.name}</span>
+                        <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-wide block">
+                          Last Assessed: {lastDate}
+                        </span>
+                      </div>
+                      <span className="text-sm font-black text-red-500 bg-red-500/10 px-3 py-1 rounded-xl uppercase tracking-wider">
+                        CPI {p.cpi > 0 ? formatScoreValue(p.cpi) : "N/A"}
+                      </span>
+                    </div>
+                  );
+                })
+              ) : (
+                <div className="p-5 text-center text-xs text-zinc-650 font-bold uppercase">
+                  No players currently needing attention.
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* 5. TOP PERFORMERS */}
+          <div className="space-y-3 text-left">
+            <h3 className="text-[10px] font-black tracking-widest text-zinc-500 uppercase flex items-center gap-2">
+              <Award className="w-3.5 h-3.5 text-orange-500" />
+              TOP PERFORMERS
+            </h3>
+            <div className="bg-zinc-950 border border-zinc-900 rounded-3xl divide-y divide-zinc-900/60 overflow-hidden">
+              {stats?.topPerformers && stats.topPerformers.length > 0 ? (
+                stats.topPerformers.map((p, idx) => {
+                  const lastDate = lastAssessmentDates[p.name.toLowerCase()] || "No assessments";
+                  return (
+                    <div
+                      key={idx}
+                      onClick={() => navigateToPlayer(p.name)}
+                      className="p-5 flex justify-between items-center hover:bg-zinc-900/40 cursor-pointer transition-colors active:bg-zinc-900/60"
+                    >
+                      <div className="space-y-0.5">
+                        <span className="text-base font-black text-white uppercase block">{p.name}</span>
+                        <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-wide block">
+                          Last Assessed: {lastDate}
+                        </span>
+                      </div>
+                      <span className="text-sm font-black text-orange-400 bg-orange-500/10 px-3 py-1 rounded-xl uppercase tracking-wider">
+                        CPI {p.cpi > 0 ? formatScoreValue(p.cpi) : "N/A"}
+                      </span>
+                    </div>
+                  );
+                })
+              ) : (
+                <div className="p-5 text-center text-xs text-zinc-650 font-bold uppercase">
+                  No assessments logged yet.
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* 6. RECENT ACTIVITY */}
+          <div className="space-y-3 text-left">
+            <h3 className="text-[10px] font-black tracking-widest text-zinc-500 uppercase flex items-center gap-2">
+              <Activity className="w-3.5 h-3.5 text-orange-500" />
+              RECENT ACTIVITY
+            </h3>
+            <div className="bg-zinc-950 border border-zinc-900 rounded-3xl divide-y divide-zinc-900/60 overflow-hidden">
+              {stats?.recentAssessments && stats.recentAssessments.length > 0 ? (
+                stats.recentAssessments.map((a, idx) => (
+                  <div
+                    key={idx}
+                    onClick={() => navigateToPlayer(a.playerName)}
+                    className="p-5 flex justify-between items-center hover:bg-zinc-900/40 cursor-pointer transition-colors active:bg-zinc-900/60"
+                  >
+                    <div className="space-y-0.5 text-left">
+                      <span className="text-base font-black text-white uppercase block">{a.playerName}</span>
+                      <span className="text-[9px] font-bold text-zinc-550 uppercase tracking-wide block mt-0.5">
+                        {a.assessmentType === "PRACTICE" ? "Practice Assessment" : "Match Assessment"}
+                      </span>
+                    </div>
+                    <span className="text-[10px] font-bold text-zinc-400 bg-zinc-900 border border-zinc-850 px-2.5 py-1 rounded-lg uppercase tracking-wide">
+                      {formatActivityDate(a.date)}
                     </span>
                   </div>
-                  <span className="text-sm font-black text-red-500 bg-red-500/10 px-3 py-1 rounded-xl uppercase tracking-wider">
-                    CPI {p.cpi > 0 ? formatScoreValue(p.cpi) : "N/A"}
-                  </span>
+                ))
+              ) : (
+                <div className="p-5 text-center text-xs text-zinc-650 font-bold uppercase">
+                  No recent assessment activity logged.
                 </div>
-              );
-            })
-          ) : (
-            <div className="p-5 text-center text-xs text-zinc-650 font-bold uppercase">
-              No players currently needing attention.
+              )}
             </div>
-          )}
+          </div>
         </div>
-      </div>
-
-      {/* 5. TOP PERFORMERS */}
-      <div className="space-y-3 text-left">
-        <h3 className="text-[10px] font-black tracking-widest text-zinc-500 uppercase flex items-center gap-2">
-          <Award className="w-3.5 h-3.5 text-orange-500" />
-          TOP PERFORMERS
-        </h3>
-        <div className="bg-zinc-950 border border-zinc-900 rounded-3xl divide-y divide-zinc-900/60 overflow-hidden">
-          {stats?.topPerformers && stats.topPerformers.length > 0 ? (
-            stats.topPerformers.map((p, idx) => {
-              const lastDate = lastAssessmentDates[p.name.toLowerCase()] || "No assessments";
-              return (
-                <div
-                  key={idx}
-                  onClick={() => navigateToPlayer(p.name)}
-                  className="p-5 flex justify-between items-center hover:bg-zinc-900/40 cursor-pointer transition-colors active:bg-zinc-900/60"
-                >
-                  <div className="space-y-0.5">
-                    <span className="text-base font-black text-white uppercase block">{p.name}</span>
-                    <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-wide block">
-                      Last Assessed: {lastDate}
-                    </span>
-                  </div>
-                  <span className="text-sm font-black text-orange-400 bg-orange-500/10 px-3 py-1 rounded-xl uppercase tracking-wider">
-                    CPI {p.cpi > 0 ? formatScoreValue(p.cpi) : "N/A"}
-                  </span>
-                </div>
-              );
-            })
-          ) : (
-            <div className="p-5 text-center text-xs text-zinc-650 font-bold uppercase">
-              No assessments logged yet.
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* 6. RECENT ACTIVITY */}
-      <div className="space-y-3 text-left">
-        <h3 className="text-[10px] font-black tracking-widest text-zinc-500 uppercase flex items-center gap-2">
-          <Activity className="w-3.5 h-3.5 text-orange-500" />
-          RECENT ACTIVITY
-        </h3>
-        <div className="bg-zinc-950 border border-zinc-900 rounded-3xl divide-y divide-zinc-900/60 overflow-hidden">
-          {stats?.recentAssessments && stats.recentAssessments.length > 0 ? (
-            stats.recentAssessments.map((a, idx) => (
-              <div
-                key={idx}
-                onClick={() => navigateToPlayer(a.playerName)}
-                className="p-5 flex justify-between items-center hover:bg-zinc-900/40 cursor-pointer transition-colors active:bg-zinc-900/60"
-              >
-                <div className="space-y-0.5 text-left">
-                  <span className="text-base font-black text-white uppercase block">{a.playerName}</span>
-                  <span className="text-[9px] font-bold text-zinc-550 uppercase tracking-wide block mt-0.5">
-                    {a.assessmentType === "PRACTICE" ? "Practice Assessment" : "Match Assessment"}
-                  </span>
-                </div>
-                <span className="text-[10px] font-bold text-zinc-400 bg-zinc-900 border border-zinc-850 px-2.5 py-1 rounded-lg uppercase tracking-wide">
-                  {formatActivityDate(a.date)}
-                </span>
-              </div>
-            ))
-          ) : (
-            <div className="p-5 text-center text-xs text-zinc-650 font-bold uppercase">
-              No recent assessment activity logged.
-            </div>
-          )}
-        </div>
-      </div>
+      )}
 
     </div>
   );
