@@ -426,43 +426,7 @@ export default function DashboardPage() {
       {/* COACH SPECIFIC SECTIONS */}
       {role !== "player" && (
         <div className="space-y-8">
-          {/* 4. PLAYERS NEEDING ATTENTION */}
-          <div className="space-y-3 text-left">
-            <h3 className="text-xs font-bold tracking-widest text-zinc-700 dark:text-zinc-400 uppercase flex items-center gap-2">
-              <AlertTriangle className="w-3.5 h-3.5 text-red-500" />
-              PLAYERS NEEDING ATTENTION
-            </h3>
-            <div className="bg-zinc-950 border border-zinc-900 rounded-3xl divide-y divide-zinc-900/60 overflow-hidden">
-              {stats?.playersNeedingAttention && stats.playersNeedingAttention.length > 0 ? (
-                stats.playersNeedingAttention.map((p, idx) => {
-                  const lastDate = lastAssessmentDates[p.name.toLowerCase()] || "No assessments";
-                  return (
-                    <div
-                      key={idx}
-                      onClick={() => navigateToPlayer(p.name)}
-                      className="p-5 flex justify-between items-center hover:bg-zinc-900/40 cursor-pointer transition-colors active:bg-zinc-900/60"
-                    >
-                      <div className="space-y-0.5">
-                        <span className="text-base font-black text-white uppercase block">{p.name}</span>
-                        <span className="text-[11px] font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wide block">
-                          Last Assessed: {lastDate}
-                        </span>
-                      </div>
-                      <span className="text-sm font-black text-red-500 bg-red-500/10 px-3 py-1 rounded-xl uppercase tracking-wider">
-                        CPI {p.cpi > 0 ? formatScoreValue(p.cpi) : "N/A"}
-                      </span>
-                    </div>
-                  );
-                })
-              ) : (
-                <div className="p-5 text-center text-[13px] text-zinc-500 font-semibold uppercase tracking-wide">
-                  No players currently needing attention.
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* 5. TOP PERFORMERS */}
+          {/* 4. TOP PERFORMERS */}
           <div className="space-y-3 text-left">
             <h3 className="text-xs font-bold tracking-widest text-zinc-700 dark:text-zinc-400 uppercase flex items-center gap-2">
               <Award className="w-3.5 h-3.5 text-orange-500" />
@@ -493,6 +457,42 @@ export default function DashboardPage() {
               ) : (
                 <div className="p-5 text-center text-[13px] text-zinc-500 font-semibold uppercase tracking-wide">
                   No assessments logged yet.
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* 5. PLAYERS NEEDING ATTENTION */}
+          <div className="space-y-3 text-left">
+            <h3 className="text-xs font-bold tracking-widest text-zinc-700 dark:text-zinc-400 uppercase flex items-center gap-2">
+              <AlertTriangle className="w-3.5 h-3.5 text-red-500" />
+              PLAYERS NEEDING ATTENTION
+            </h3>
+            <div className="bg-zinc-950 border border-zinc-900 rounded-3xl divide-y divide-zinc-900/60 overflow-hidden">
+              {stats?.playersNeedingAttention && stats.playersNeedingAttention.length > 0 ? (
+                stats.playersNeedingAttention.map((p, idx) => {
+                  const lastDate = lastAssessmentDates[p.name.toLowerCase()] || "No assessments";
+                  return (
+                    <div
+                      key={idx}
+                      onClick={() => navigateToPlayer(p.name)}
+                      className="p-5 flex justify-between items-center hover:bg-zinc-900/40 cursor-pointer transition-colors active:bg-zinc-900/60"
+                    >
+                      <div className="space-y-0.5">
+                        <span className="text-base font-black text-white uppercase block">{p.name}</span>
+                        <span className="text-[11px] font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wide block">
+                          Last Assessed: {lastDate}
+                        </span>
+                      </div>
+                      <span className="text-sm font-black text-red-500 bg-red-500/10 px-3 py-1 rounded-xl uppercase tracking-wider">
+                        CPI {p.cpi > 0 ? formatScoreValue(p.cpi) : "N/A"}
+                      </span>
+                    </div>
+                  );
+                })
+              ) : (
+                <div className="p-5 text-center text-[13px] text-zinc-500 font-semibold uppercase tracking-wide">
+                  No players currently needing attention.
                 </div>
               )}
             </div>
