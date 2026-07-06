@@ -24,7 +24,7 @@ public class RegisterRequest {
     private String city;
     private String description;
 
-    // Join Code Field (Option 2)
+    
     private String joinCode;
     private String invitationCode;
 }
